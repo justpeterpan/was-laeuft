@@ -90,7 +90,7 @@ function skipCurrentRound(skip = 1) {
       guess the song <sup>♫</sup>
     </h1>
     <div class="font-thin italic font-serif m-4 md:m-0 pb-8">
-      <p>1. Play the drum track and try to guess the song</p>
+      <p>1. Play the bass track and try to guess the song</p>
       <p>2. Search for the song and select your answer</p>
       <p>3. No clue? Skip the guess & play the next track</p>
       <p>4. Four rounds: bass, drums, vocals, instruments</p>
