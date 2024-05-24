@@ -3,6 +3,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vueuse/nuxt'],
   runtimeConfig: {
-    lastfm: '',
+    lastfm: process.env.LASTFM || '',
   },
 })
