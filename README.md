@@ -1,6 +1,6 @@
 # Was laeuft
 
-![app screenshot](gts.png)  
+![app screenshot](screen.png)  
 [Live](https://was-laeuft.pages.dev/)
 
 Guess the song based on the individual instrument tracks.
