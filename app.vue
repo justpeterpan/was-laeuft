@@ -46,7 +46,7 @@ function selectAnswer(index: number) {
     normalizedAnswer.includes(normalizedArtist)
   ) {
     correctlyAnswered.value = true
-    skipCurrentRound(3)
+    skipCurrentRound(4)
   } else {
     skipCurrentRound()
   }
@@ -81,38 +81,44 @@ function skipCurrentRound(skip = 1) {
   if (currentRound.value === 1) playLabel.value = 'drums'
   if (currentRound.value === 2) playLabel.value = 'vocals'
   if (currentRound.value === 3) playLabel.value = 'track'
+  if (currentRound.value > 3) playCurrentStem()
 }
 </script>
 
 <template>
   <div class="grid justify-center place-content-center h-screen">
-    <h1 class="text-2xl font-black mx-4 pb-10 drop-shadow-md">
-      guess the song <sup>♫</sup>
+    <h1 class="text-2xl font-black mx-4 pb-10 drop-shadow-md font-serif">
+      guess the song <sup class="text-lg">♫</sup>
     </h1>
     <div class="font-thin italic font-serif m-4 md:m-0 pb-8">
       <p>1. Play the bass track and try to guess the song</p>
       <p>2. Search for the song and select your answer</p>
       <p>3. No clue? Skip the guess & play the next track</p>
       <p>4. Four rounds: bass, drums, vocals, instruments</p>
+      <p>5. New song daily</p>
+    </div>
+    <div class="mx-4 font-thin rounded border py-2 text-center">
+      <span class="text-[12px] align-middle">ℹ️</span>️ YouTube views:
+      {{ views }} | Year of release: {{ year }}
     </div>
     <div class="flex flex-row justify-between m-4 w-[350px] list">
       <button
         @click="playCurrentStem()"
         class="rounded shadow-sm border px-4 py-2"
       >
-        🔈️ {{ playLabel }}
+        <span class="text-[12px] align-middle pb-2">️🔊</span> {{ playLabel }}
       </button>
       <button
         @click="pauseCurrentStem"
         class="rounded shadow-sm border px-4 py-2"
       >
-        ⏸️ pause
+        <span class="text-[12px] align-middle">⏸️</span> pause
       </button>
       <button
         @click="stopCurrentStem"
         class="rounded shadow-sm border px-4 py-2"
       >
-        ⏹️ stop
+        <span class="text-[12px] align-middle">⏹️</span> stop
       </button>
       <audio src="/dbtml/bass.mp3" ref="bass" />
       <audio src="/dbtml/drums.mp3" ref="drums" />
@@ -121,6 +127,7 @@ function skipCurrentRound(skip = 1) {
     </div>
 
     <input
+      v-if="currentRound < 4"
       type="text"
       v-model="searchQuery"
       @input="handleInput"
@@ -128,7 +135,10 @@ function skipCurrentRound(skip = 1) {
       class="m-4 max-w-[350px] p-2 border-b border-neutral-300 border-dotted bg-neutral-50"
     />
 
-    <div v-if="!answer" class="max-w-[350px]">
+    <div
+      v-if="!answer || (!correctlyAnswered && currentRound < 3)"
+      class="max-w-[350px]"
+    >
       <ClientOnly>
         <TransitionGroup name="list" tag="ul" class="m-4 max-h-[450px]">
           <li
@@ -143,17 +153,19 @@ function skipCurrentRound(skip = 1) {
       </ClientOnly>
     </div>
     <button
+      v-if="currentRound < 4"
       @click="skipCurrentRound()"
       class="border rounded shadow-sm m-4 p-2 w-[350px]"
     >
-      ⏭️ Skip Guess
+      <span class="text-[10px] align-middle">⏭️</span> Skip Guess
     </button>
     <div v-if="correctlyAnswered || currentRound > 3" class="max-w-[350px] m-4">
       <p class="italic font-serif font-medium pb-2">
-        Well done! You guessed it right! (or maybe not)
+        Well done! You guessed it right! (or not)
       </p>
       <NuxtLink :to="link" target="_blank">
-        📺 {{ artist }} - {{ title }}
+        <span class="text-[10px] align-middle">📺</span> {{ artist }} -
+        {{ title }}
       </NuxtLink>
     </div>
   </div>
