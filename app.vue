@@ -8,7 +8,6 @@ useHead({
   bodyAttrs: { class: 'bg-neutral-50' },
 })
 
-const id = useId()
 const { query } = useRoute()
 
 const { year, artist, cover, views, link, short, title } = await $fetch(
@@ -115,11 +114,16 @@ function audioSrc(short: string, stem: string) {
 
 <template>
   <div class="grid justify-center place-content-center h-screen">
-    <div class="border p-10 rounded-md shadow-md justify-center grid">
+    <div
+      class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
+    >
       <h1 class="text-2xl font-black mx-4 pb-10 drop-shadow-md font-serif">
         guess the song <sup class="text-lg">♫</sup>
       </h1>
-      <div class="font-thin italic font-serif m-4 md:m-0 pb-8">
+      <div
+        v-if="currentRound === 0"
+        class="font-thin italic font-serif m-4 md:m-0 pb-8"
+      >
         <p>1. Play the bass track and try to guess the song</p>
         <p>2. Search for the song and select your answer</p>
         <p>3. No clue? Skip the guess & play the next track</p>
@@ -172,7 +176,7 @@ function audioSrc(short: string, stem: string) {
           <TransitionGroup name="list" tag="ul" class="m-4 max-h-[450px]">
             <li
               v-for="(hit, index) of searchHits"
-              :key="id"
+              :key="hit.name"
               @click="selectAnswer(index)"
               class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[350px] my-2 px-2"
             >
