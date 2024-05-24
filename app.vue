@@ -90,7 +90,10 @@ function selectAnswer(index: number) {
     normalizedAnswer.includes(normalizedArtist)
   ) {
     correctlyAnswered.value = true
-    skipCurrentRound(4)
+    stopCurrentStem()
+    setTimeout(() => {
+      skipCurrentRound(4)
+    }, 100)
     isPlaying.value = true
     wow()
   } else {
@@ -139,6 +142,7 @@ function stopCurrentStem() {
 function skipCurrentRound(skip = 1) {
   currentRound.value += skip
   isPlaying.value = false
+  if (currentRound.value <= 4) stopCurrentStem()
   if (currentRound.value === 1) playLabel.value = 'drums'
   if (currentRound.value === 2) playLabel.value = 'vocals'
   if (currentRound.value >= 3) playLabel.value = 'track'

@@ -7,3 +7,11 @@ Guess the song based on the individual instrument tracks.
 Inspired by [bandle.app](https://bandle.app/).
 
 WIP
+
+## TODOS
+
+- [ ] custom error page
+- [ ] animations & micro animations
+- [ ] navigate between songs
+- [ ] refactor quiz state logic
+- [ ] optimize play/pause/stop logic
