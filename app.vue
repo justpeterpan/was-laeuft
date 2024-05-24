@@ -5,6 +5,10 @@ import confetti from 'canvas-confetti'
 useHead({
   htmlAttrs: { lang: 'en' },
   title: 'Guess the Song ♫',
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+    { rel: 'apple-touch-icon', type: 'image/png', href: '/favicon.png' },
+  ],
   bodyAttrs: { class: 'bg-neutral-50' },
 })
 
