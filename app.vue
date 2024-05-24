@@ -47,11 +47,12 @@ function selectAnswer(index: number) {
   ) {
     correctlyAnswered.value = true
     skipCurrentRound(4)
+    playCurrentStem()
   } else {
     skipCurrentRound()
+    answer.value = ''
+    searchQuery.value = ''
   }
-  stopCurrentStem()
-  playCurrentStem()
 }
 
 function playCurrentStem() {
@@ -95,7 +96,7 @@ function skipCurrentRound(skip = 1) {
       <p>2. Search for the song and select your answer</p>
       <p>3. No clue? Skip the guess & play the next track</p>
       <p>4. Four rounds: bass, drums, vocals, instruments</p>
-      <p>5. New song daily</p>
+      <p>5. A new song challenge every day!</p>
     </div>
     <div class="mx-4 font-thin rounded border py-2 text-center">
       <span class="text-[12px] align-middle">ℹ️</span>️ YouTube views:
@@ -151,6 +152,9 @@ function skipCurrentRound(skip = 1) {
           </li>
         </TransitionGroup>
       </ClientOnly>
+    </div>
+    <div v-if="currentRound < 4" class="mx-4 text-center">
+      {{ currentRound + 1 }} of 4 rounds
     </div>
     <button
       v-if="currentRound < 4"
