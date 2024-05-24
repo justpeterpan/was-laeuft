@@ -122,10 +122,10 @@ function skipCurrentRound(skip = 1) {
       <button @click="playCurrentStem()">{{ playLabel }}</button>
       <button @click="pauseCurrentStem">pause</button>
       <button @click="stopCurrentStem">stop</button>
-      <audio src="./data/dbtml/bass.mp3" ref="bass" />
-      <audio src="./data/dbtml/drums.mp3" ref="drums" />
-      <audio src="./data/dbtml/vocal.mp3" ref="vocal" />
-      <audio src="./data/dbtml/instru.mp3" ref="instru" />
+      <audio src="/dbtml/bass.mp3" ref="bass" />
+      <audio src="/dbtml/drums.mp3" ref="drums" />
+      <audio src="/dbtml/vocal.mp3" ref="vocal" />
+      <audio src="/dbtml/instru.mp3" ref="instru" />
     </div>
 
     <input
