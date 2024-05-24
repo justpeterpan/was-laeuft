@@ -15,5 +15,5 @@ export default defineEventHandler(async (event) => {
     name: track.name,
     artist: track.artist,
   }))
-  return slimResponse
+  return slimResponse.slice(0, 5)
 })
