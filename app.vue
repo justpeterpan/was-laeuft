@@ -28,85 +28,48 @@ const handleInput = useDebounceFn(async () => {
 }, 100)
 
 function selectAnswer(index: number) {
-  answer.value = `${searchHits.value[index].artist} - ${searchHits.value[index].name}`
-  searchQuery.value = `${searchHits.value[index].artist} - ${searchHits.value[index].name}`
+  const selectedHit = searchHits.value[index]
+  answer.value = `${selectedHit.artist} - ${selectedHit.name}`
+  searchQuery.value = answer.value
+
+  const normalizedAnswer = answer.value.toLowerCase().trim()
+  const normalizedTitle = title.toLowerCase().trim()
+  const normalizedArtist = artist.toLowerCase().trim()
+
   if (
-    answer.value.toLowerCase().trim().includes(title.toLowerCase().trim()) &&
-    answer.value.toLowerCase().trim().includes(artist.toLowerCase().trim())
+    normalizedAnswer.includes(normalizedTitle) &&
+    normalizedAnswer.includes(normalizedArtist)
   ) {
     correctlyAnswered.value = true
     skipCurrentRound(3)
-    stopCurrentStem()
-    playCurrentStem()
   } else {
-    stopCurrentStem()
     skipCurrentRound()
   }
+  stopCurrentStem()
+  playCurrentStem()
 }
 
 function playCurrentStem() {
-  if (currentRound.value === 0) {
-    bass.value.play()
-  } else if (currentRound.value === 1) {
-    bass.value.play()
-    drums.value.play()
-  } else if (currentRound.value === 2) {
-    bass.value.play()
-    drums.value.play()
-    vocal.value.play()
-  } else if (currentRound.value >= 3) {
-    bass.value.play()
-    drums.value.play()
-    vocal.value.play()
-    instru.value.play()
+  const stems = [bass.value, drums.value, vocal.value, instru.value]
+  for (let i = 0; i <= currentRound.value; i++) {
+    stems[i]?.play()
   }
 }
 
 function pauseCurrentStem() {
-  if (currentRound.value === 0) {
-    bass.value.pause()
-  } else if (currentRound.value === 1) {
-    bass.value.pause()
-    drums.value.pause()
-  } else if (currentRound.value === 2) {
-    bass.value.pause()
-    drums.value.pause()
-    vocal.value.pause()
-  } else if (currentRound.value >= 3) {
-    bass.value.pause()
-    drums.value.pause()
-    vocal.value.pause()
-    instru.value.pause()
+  const stems = [bass.value, drums.value, vocal.value, instru.value]
+  for (let i = 0; i <= currentRound.value; i++) {
+    stems[i]?.pause()
+  }
+}
+function stopCurrentStem() {
+  const stems = [bass.value, drums.value, vocal.value, instru.value]
+  for (let i = 0; i <= currentRound.value; i++) {
+    stems[i]?.pause()
+    if (stems[i]) stems[i].currentTime = 0
   }
 }
 
-function stopCurrentStem() {
-  if (currentRound.value === 0) {
-    bass.value.pause()
-    bass.value.currentTime = 0
-  } else if (currentRound.value === 1) {
-    bass.value.pause()
-    bass.value.currentTime = 0
-    drums.value.pause()
-    drums.value.currentTime = 0
-  } else if (currentRound.value === 2) {
-    bass.value.pause()
-    bass.value.currentTime = 0
-    drums.value.pause()
-    drums.value.currentTime = 0
-    vocal.value.pause()
-    vocal.value.currentTime = 0
-  } else if (currentRound.value >= 3) {
-    bass.value.pause()
-    bass.value.currentTime = 0
-    drums.value.pause()
-    drums.value.currentTime = 0
-    vocal.value.pause()
-    vocal.value.currentTime = 0
-    instru.value.pause()
-    instru.value.currentTime = 0
-  }
-}
 function skipCurrentRound(skip = 1) {
   currentRound.value += skip
   stopCurrentStem()
@@ -124,7 +87,7 @@ function skipCurrentRound(skip = 1) {
       <button @click="stopCurrentStem">stop</button>
       <audio src="/dbtml/bass.mp3" ref="bass" />
       <audio src="/dbtml/drums.mp3" ref="drums" />
-      <audio src="/dbtml/vocal.mp3" ref="vocal" />
+      <audio src="/dbtml/vocals.mp3" ref="vocal" />
       <audio src="/dbtml/instru.mp3" ref="instru" />
     </div>
 
