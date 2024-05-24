@@ -163,6 +163,9 @@ watch(bass, (newValue) => {
   }
   bass.value.onended = () => {
     isPlaying.value = false
+    setTimeout(() => {
+      currentTime.value = 0
+    }, 500)
   }
 })
 </script>
@@ -173,9 +176,11 @@ watch(bass, (newValue) => {
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
       <div class="flex flex-row items-center mx-4 gap-1 pb-10">
-        <h1 class="text-2xl font-black drop-shadow-md font-serif">
-          guess the song
-        </h1>
+        <NuxtLink to="/">
+          <h1 class="text-2xl font-black drop-shadow-md font-serif">
+            guess the song
+          </h1>
+        </NuxtLink>
         <UTooltip
           :popper="{ placement: 'bottom', offsetDistance: -6, arrow: true }"
           :ui="{
