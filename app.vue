@@ -223,25 +223,21 @@ const isShown = ref(words.map(() => false))
         class="grid gap-1 sm:gap-2 m-4 w-[300px] sm:w-[350px]"
         :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
       >
-        <ClientOnly>
-          <button
-            @click="playCurrentStem()"
-            :style="{
-              background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
-            }"
-            class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
-          >
-            <UIcon
-              :name="
-                isPlaying
-                  ? 'i-heroicons-pause-circle'
-                  : 'i-heroicons-play-circle'
-              "
-              class="text-lg align-middle"
-            />
-            <span class="align-middle">{{ playLabel }}</span>
-          </button>
-        </ClientOnly>
+        <button
+          @click="playCurrentStem()"
+          :style="{
+            background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
+          }"
+          class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
+        >
+          <UIcon
+            :name="
+              isPlaying ? 'i-heroicons-pause-circle' : 'i-heroicons-play-circle'
+            "
+            class="text-lg align-middle"
+          />
+          <span class="align-middle">{{ playLabel }}</span>
+        </button>
         <button
           v-if="currentRound < 4"
           @click="skipCurrentRound()"
