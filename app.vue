@@ -194,14 +194,15 @@ const isShown = ref(words.map(() => false))
             </span>
           </h1>
         </NuxtLink>
-        <UTooltip
+        <UPopover
           :popper="{ placement: 'bottom', offsetDistance: -6, arrow: true }"
           :ui="{
             width: 'max-w-max',
-            base: '[@media(pointer:coarse)]:hidden h-32 px-2 py-1 text-sm font-thin italic font-serif p-4 relative',
+            base: 'h-32 px-2 py-1 text-sm font-thin italic font-serif p-4 relative',
           }"
+          mode="hover"
         >
-          <template #text class="h-96">
+          <template #panel>
             <div class="">
               <p>1. Play the bass track and try to guess the song</p>
               <p>2. Search for the song and select your answer</p>
@@ -211,7 +212,7 @@ const isShown = ref(words.map(() => false))
             </div>
           </template>
           <sup class="text-xl font-black font-serif text-primary">♫</sup>
-        </UTooltip>
+        </UPopover>
       </div>
 
       <div
