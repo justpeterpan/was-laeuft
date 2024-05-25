@@ -2,10 +2,6 @@
 import { useDebounceFn } from '@vueuse/core'
 import confetti from 'canvas-confetti'
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-const toast = useToast()
-
 useHead({
   htmlAttrs: { lang: 'en' },
   title: 'Guess the Song ♫',
@@ -16,6 +12,7 @@ useHead({
 })
 
 const { query } = useRoute()
+const toast = useToast()
 
 const { year, artist, cover, views, link, short, title } = await $fetch(
   '/api/s',
@@ -158,7 +155,7 @@ onMounted(() => {
   words.forEach((_, index) => {
     setTimeout(() => {
       isShown.value[index] = true
-    }, index * 300) // Adjust the delay as needed
+    }, index * 300)
   })
 })
 
@@ -205,7 +202,7 @@ const isShown = ref(words.map(() => false))
           <template #panel>
             <div class="">
               <p>1. Play the bass track and try to guess the song</p>
-              <p>2. Search for the song and select your answer</p>
+              <p>2. Type your guess and select your answer</p>
               <p>3. No clue? Skip the guess & play the next track</p>
               <p>4. Four rounds: bass, drums, vocals, instruments</p>
               <p>5. A new song challenge every day!</p>
@@ -215,11 +212,6 @@ const isShown = ref(words.map(() => false))
         </UPopover>
       </div>
 
-      <div
-        class="mx-4 text-sm sm:text-base font-thin rounded border py-2 text-center flex flex-row justify-center gap-1 items-center"
-      >
-        YouTube views: {{ views }} | Year of release: {{ year }}
-      </div>
       <div
         class="grid gap-1 sm:gap-2 m-4 w-[300px] sm:w-[350px]"
         :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
@@ -254,12 +246,20 @@ const isShown = ref(words.map(() => false))
         <audio :src="audioSrc(short, 'instru')" ref="instru" />
       </div>
 
+      <div
+        class="mx-4 text-sm sm:text-base font-thin rounded border py-2 flex flex-row justify-center gap-1 items-center"
+      >
+        <div>YouTube views: {{ currentRound < 1 ? '???' : views }}</div>
+        <div>|</div>
+        <div>Year of release: {{ currentRound < 2 ? '???' : year }}</div>
+      </div>
+
       <input
         v-if="currentRound < 4"
         type="text"
         v-model="searchQuery"
         @input="handleInput"
-        placeholder="enter song title..."
+        placeholder="type your guess here..."
         class="m-4 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
       />
 
