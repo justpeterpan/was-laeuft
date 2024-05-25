@@ -155,6 +155,11 @@ function audioSrc(short: string, stem: string) {
 onMounted(() => {
   currentTime.value = bass.value.currentTime
   duration.value = bass.value.duration
+  words.forEach((_, index) => {
+    setTimeout(() => {
+      isShown.value[index] = true
+    }, index * 300) // Adjust the delay as needed
+  })
 })
 
 watch(bass, (newValue) => {
@@ -168,17 +173,25 @@ watch(bass, (newValue) => {
     }, 500)
   }
 })
+const words = ['guess', 'the', 'song']
+const isShown = ref(words.map(() => false))
 </script>
 
 <template>
-  <div class="grid justify-center place-content-center h-screen">
+  <div class="grid justify-center place-content-center min-h-svh">
     <div
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
       <div class="flex flex-row items-center mx-4 gap-1 pb-10">
         <NuxtLink to="/">
           <h1 class="text-2xl font-black drop-shadow-md font-serif">
-            guess the song
+            <span
+              v-for="(word, index) in words"
+              :key="index"
+              :class="{ show: isShown[index] }"
+            >
+              {{ word }}
+            </span>
           </h1>
         </NuxtLink>
         <UTooltip
@@ -202,21 +215,19 @@ watch(bass, (newValue) => {
       </div>
 
       <div
-        class="mx-4 font-thin rounded border py-2 text-center flex flex-row justify-center gap-1 items-center"
+        class="mx-4 text-sm sm:text-base font-thin rounded border py-2 text-center flex flex-row justify-center gap-1 items-center"
       >
         YouTube views: {{ views }} | Year of release: {{ year }}
       </div>
       <div
-        class="grid gap-2 m-4 w-[350px]"
+        class="grid gap-1 sm:gap-2 m-4 w-[300px] sm:w-[350px]"
         :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
       >
         <ClientOnly>
           <button
             @click="playCurrentStem()"
             :style="{
-              background: `linear-gradient(to right, #FACC15 ${progress}%, ${
-                isDark ? '#121212' : '#fff'
-              } ${progress}%)`,
+              background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
             }"
             class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
           >
@@ -252,12 +263,12 @@ watch(bass, (newValue) => {
         v-model="searchQuery"
         @input="handleInput"
         placeholder="enter song title..."
-        class="m-4 max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
+        class="m-4 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
       />
 
       <div
         v-if="!answer || (!correctlyAnswered && currentRound < 3)"
-        class="max-w-[350px] min-h-4 max-h-[190px]"
+        class="max-w-[300px] sm:max-w-[350px] min-h-4 max-h-[190px]"
       >
         <ClientOnly>
           <ul class="m-4 max-h-[450px]">
@@ -265,7 +276,7 @@ watch(bass, (newValue) => {
               v-for="(hit, index) of searchHits"
               :key="hit.name + hit.artist"
               @click="selectAnswer(index)"
-              class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[350px] my-2 px-2"
+              class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[300px] sm:w-[350px] my-2 px-2"
             >
               {{ hit.artist }} - {{ hit.name }}
             </li>
@@ -281,7 +292,7 @@ watch(bass, (newValue) => {
 
       <div
         v-if="correctlyAnswered || currentRound > 3"
-        class="max-w-[350px] m-4"
+        class="max-w-[300px] sm:max-w-[350px] m-4"
       >
         <p class="italic font-serif font-medium pb-2">
           {{
@@ -294,7 +305,7 @@ watch(bass, (newValue) => {
           <img
             :src="cover"
             alt="album cover of the song"
-            class="mb-2 w-[350px] shadow-md border border-neutral-300 rounded-md"
+            class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-md"
           />
           <NuxtLink :to="link" target="_blank">
             <span class="text-[10px] align-middle">📺</span> {{ artist }} -
@@ -306,3 +317,22 @@ watch(bass, (newValue) => {
     <UNotifications color="primary" />
   </div>
 </template>
+
+<style scoped>
+h1 {
+  display: flex;
+  gap: 0.5rem;
+}
+
+h1 span {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+h1 span.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+</style>
