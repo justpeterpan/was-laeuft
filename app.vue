@@ -213,7 +213,7 @@ const isShown = ref(words.map(() => false))
       </div>
 
       <div
-        class="grid gap-1 sm:gap-2 m-4 w-[300px] sm:w-[350px]"
+        class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
         :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
       >
         <button
@@ -260,7 +260,7 @@ const isShown = ref(words.map(() => false))
         v-model="searchQuery"
         @input="handleInput"
         placeholder="type your guess here..."
-        class="m-4 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
+        class="mx-4 my-8 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
       />
 
       <div
