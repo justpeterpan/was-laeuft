@@ -13,4 +13,9 @@ export default defineNuxtConfig({
       position: 'bottom-0 top-auto left-0 right-auto',
     },
   },
+  tailwindcss: {
+    config: {
+      plugins: [require('tailwindcss-animated')],
+    },
+  },
 })

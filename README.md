@@ -15,3 +15,4 @@ WIP
 - [ ] navigate between songs
 - [ ] refactor quiz state logic
 - [ ] optimize play/pause/stop logic
+- [ ] implement scoring system

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useStorage } from '@vueuse/core'
 import confetti from 'canvas-confetti'
 
 useHead({
@@ -41,6 +41,8 @@ const roundNumberAsString: { [key: number]: string } = {
   3: '3ʳᵈ',
   4: '4ᵗʰ',
 }
+
+const storage = useStorage('noteHasBeenHovered', false)
 
 const searchQuery = defineModel('searchQuery', { type: String, default: '' })
 const currentRound = ref(0)
@@ -150,6 +152,7 @@ function audioSrc(short: string, stem: string) {
 }
 
 onMounted(() => {
+  console.log(storage.value)
   currentTime.value = bass.value.currentTime
   duration.value = bass.value.duration
   words.forEach((_, index) => {
@@ -170,6 +173,11 @@ watch(bass, (newValue) => {
     }, 500)
   }
 })
+
+function noteHasBeenHovered() {
+  storage.value = true
+}
+
 const words = ['guess', 'the', 'song']
 const isShown = ref(words.map(() => false))
 </script>
@@ -208,7 +216,17 @@ const isShown = ref(words.map(() => false))
               <p>5. A new song challenge every day!</p>
             </div>
           </template>
-          <sup class="text-xl font-black font-serif text-primary">♫</sup>
+          <ClientOnly>
+            <sup
+              @mouseenter="noteHasBeenHovered()"
+              class="text-xl font-black font-serif text-primary"
+              :class="{
+                'animate-infinite animate-duration-500 animate-bounce animate-ease-in-out':
+                  !storage,
+              }"
+              >♫</sup
+            >
+          </ClientOnly>
         </UPopover>
       </div>
 
