@@ -146,7 +146,7 @@ function skipCurrentRound(skip = 1) {
   if (currentRound.value > 3) playCurrentStem()
 }
 function audioSrc(short: string, stem: string) {
-  return `/${short}/${stem}.mp3`
+  return `${useRuntimeConfig().public.bucket}/${short}/${stem}.mp3`
 }
 
 onMounted(() => {

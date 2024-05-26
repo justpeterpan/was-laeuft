@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   modules: ['@vueuse/nuxt', '@nuxt/ui'],
   runtimeConfig: {
     lastfm: process.env.LASTFM || '',
+    public: {
+      bucket: process.env.PUBLIC_BUCKET || '',
+    },
   },
   ui: {
     notifications: {
