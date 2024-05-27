@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useDebounceFn, useStorage } from '@vueuse/core'
+import { useDebounceFn } from '@vueuse/core'
 import confetti from 'canvas-confetti'
 
 useHead({
@@ -41,8 +41,6 @@ const roundNumberAsString: { [key: number]: string } = {
   3: '3ʳᵈ',
   4: '4ᵗʰ',
 }
-
-const storage = useStorage('noteHasBeenHovered', false)
 
 const searchQuery = defineModel('searchQuery', { type: String, default: '' })
 const currentRound = ref(0)
@@ -101,7 +99,7 @@ function selectAnswer(index: number) {
       title: 'Incorrect',
       closeButton: undefined,
       description: 'Try again!',
-      timeout: 1500,
+      timeout: 3500,
     })
     skipCurrentRound()
     stopCurrentStem()
@@ -176,31 +174,14 @@ watch(bass, (newValue) => {
   }
 })
 
-function noteHasBeenHovered() {
-  storage.value = true
-}
-
 const words = ['guess', 'the', 'song']
 const isShown = ref(words.map(() => false))
 </script>
 
 <template>
   <div class="grid justify-center place-content-center min-h-svh">
-    <div
-      class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
-    >
-      <div class="flex flex-row items-center mx-4 gap-1 pb-10">
-        <NuxtLink to="/">
-          <h1 class="text-2xl font-black drop-shadow-md font-serif">
-            <span
-              v-for="(word, index) in words"
-              :key="index"
-              :class="{ show: isShown[index] }"
-            >
-              {{ word }}
-            </span>
-          </h1>
-        </NuxtLink>
+    <nav class="p-4 absolute w-full">
+      <ul class="flex flex-row-reverse justify-between">
         <UPopover
           :popper="{ placement: 'bottom', offsetDistance: -6, arrow: true }"
           :ui="{
@@ -218,18 +199,31 @@ const isShown = ref(words.map(() => false))
               <p>5. A new song challenge every day!</p>
             </div>
           </template>
-          <ClientOnly>
-            <sup
-              @mouseenter="noteHasBeenHovered()"
-              class="text-xl font-black font-serif text-primary"
-              :class="{
-                'animate-infinite animate-duration-500 animate-bounce animate-ease-in-out':
-                  !storage,
-              }"
-              >♫</sup
-            >
-          </ClientOnly>
+          <li>
+            <UIcon
+              name="i-heroicons-question-mark-circle"
+              class="h-6 w-6 p-2"
+            />
+          </li>
         </UPopover>
+      </ul>
+    </nav>
+    <div
+      class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
+    >
+      <div class="flex flex-row items-center mx-4 gap-1 pb-10">
+        <NuxtLink to="/">
+          <h1 class="text-2xl font-black drop-shadow-md font-serif">
+            <span
+              v-for="(word, index) in words"
+              :key="index"
+              :class="{ show: isShown[index] }"
+            >
+              {{ word }}
+            </span>
+          </h1>
+        </NuxtLink>
+        <sup class="text-xl font-black font-serif text-primary">♫</sup>
       </div>
 
       <div
