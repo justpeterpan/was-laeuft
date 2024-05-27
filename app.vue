@@ -152,14 +152,16 @@ function audioSrc(short: string, stem: string) {
 }
 
 onMounted(() => {
-  console.log(storage.value)
   currentTime.value = bass.value.currentTime
-  duration.value = bass.value.duration
   words.forEach((_, index) => {
     setTimeout(() => {
       isShown.value[index] = true
     }, index * 300)
   })
+})
+
+onUpdated(() => {
+  duration.value = bass.value.duration
 })
 
 watch(bass, (newValue) => {
