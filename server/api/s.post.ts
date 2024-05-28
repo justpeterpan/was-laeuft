@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     const date = new Date()
     const today = `${date.getFullYear()}${(date.getMonth() + 1)
       .toString()
-      .padStart(2, '0')}${date.getDate()}`
+      .padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`
     return songs[today as keyof typeof songs]
   }
   return songs[d as keyof typeof songs]

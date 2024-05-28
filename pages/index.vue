@@ -1,0 +1,347 @@
+<script lang="ts" setup>
+import { useDebounceFn } from '@vueuse/core'
+import confetti from 'canvas-confetti'
+
+useHead({
+  htmlAttrs: { lang: 'en' },
+  title: 'Guess the Song ♫',
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+    { rel: 'apple-touch-icon', type: 'image/png', href: '/favicon.png' },
+  ],
+})
+
+const { params } = useRoute()
+const toast = useToast()
+
+function initialDate(date: string | undefined) {
+  if (!date) return new Date()
+  const year = parseInt(date.substring(0, 4), 10)
+  const month = parseInt(date.substring(4, 6), 10) - 1
+  const day = parseInt(date.substring(6, 8), 10)
+
+  return new Date(year, month, day)
+}
+function updateDate(date: string | undefined, days: number) {
+  const newDate = new Date(initialDate(date))
+  newDate.setDate(newDate.getDate() + days)
+  return `${newDate.getFullYear()}${(newDate.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}${newDate.getDate().toString().padStart(2, '0')}`
+}
+
+const { year, artist, cover, views, link, short, title } = await $fetch(
+  '/api/s',
+  {
+    lazy: true,
+    method: 'POST',
+    body: JSON.stringify({ d: params.id }),
+  }
+)
+
+function randomInRange(min: number, max: number) {
+  return Math.random() * (max - min) + min
+}
+
+function wow() {
+  confetti({
+    origin: { y: 0.5, x: 0.5 },
+    angle: randomInRange(55, 125),
+    spread: randomInRange(50, 70),
+    particleCount: randomInRange(50, 100),
+  })
+}
+
+const roundNumberAsString: { [key: number]: string } = {
+  1: '1ˢᵗ',
+  2: '2ⁿᵈ',
+  3: '3ʳᵈ',
+  4: '4ᵗʰ',
+}
+
+const searchQuery = defineModel('searchQuery', { type: String, default: '' })
+const currentRound = ref(0)
+const bass = ref() as Ref<HTMLAudioElement>
+const drums = ref() as Ref<HTMLAudioElement>
+const vocals = ref() as Ref<HTMLAudioElement>
+const instru = ref() as Ref<HTMLAudioElement>
+const isPlaying = ref(false)
+const searchHits = ref()
+const answer = ref('')
+const correctlyAnswered = ref(false)
+const playLabel = ref('bass')
+const currentTime = ref(0)
+const duration = ref(0)
+
+const progress = computed(() => {
+  return duration.value ? (currentTime.value / duration.value) * 100 : 0
+})
+
+async function search() {
+  const res = await $fetch('/api/l', {
+    method: 'POST',
+    body: JSON.stringify({ searchQuery: searchQuery.value }),
+  })
+  searchHits.value = res
+}
+
+const handleInput = useDebounceFn(async () => {
+  await search()
+}, 100)
+
+function selectAnswer(index: number) {
+  const selectedHit = searchHits.value[index]
+  searchHits.value = []
+  answer.value = `${selectedHit.artist} - ${selectedHit.name}`
+  searchQuery.value = answer.value
+
+  const normalizedAnswer = answer.value.toLowerCase().trim()
+  const normalizedTitle = title.toLowerCase().trim()
+  const normalizedArtist = artist.toLowerCase().trim()
+
+  if (
+    normalizedAnswer.includes(normalizedTitle) &&
+    normalizedAnswer.includes(normalizedArtist)
+  ) {
+    correctlyAnswered.value = true
+    stopCurrentStem()
+    setTimeout(() => {
+      skipCurrentRound(4)
+    }, 100)
+    isPlaying.value = true
+    wow()
+  } else {
+    toast.add({
+      icon: 'i-heroicons-hand-raised',
+      title: 'Incorrect',
+      closeButton: undefined,
+      description: 'Try again!',
+      timeout: 3500,
+    })
+    skipCurrentRound()
+    stopCurrentStem()
+    answer.value = ''
+    searchQuery.value = ''
+  }
+}
+
+function playCurrentStem() {
+  if (isPlaying.value) {
+    pauseCurrentStem()
+    isPlaying.value = false
+    return
+  }
+
+  isPlaying.value = true
+  const stems = [bass.value, drums.value, vocals.value, instru.value]
+  for (let i = 0; i <= currentRound.value; i++) {
+    stems[i]?.play()
+  }
+}
+
+function pauseCurrentStem() {
+  const stems = [bass.value, drums.value, vocals.value, instru.value]
+  for (let i = 0; i <= currentRound.value; i++) {
+    stems[i]?.pause()
+  }
+}
+function stopCurrentStem() {
+  const stems = [bass.value, drums.value, vocals.value, instru.value]
+  for (let i = 0; i <= currentRound.value; i++) {
+    stems[i]?.pause()
+    if (stems[i]) stems[i].currentTime = 0
+  }
+}
+
+function skipCurrentRound(skip = 1) {
+  currentRound.value += skip
+  isPlaying.value = false
+  if (currentRound.value <= 4) stopCurrentStem()
+  if (currentRound.value === 1) playLabel.value = 'drums'
+  if (currentRound.value === 2) playLabel.value = 'vocals'
+  if (currentRound.value >= 3) playLabel.value = 'track'
+  if (currentRound.value > 3) playCurrentStem()
+}
+function audioSrc(short: string, stem: string) {
+  return `${useRuntimeConfig().public.bucket}/${short}/${stem}.mp3`
+}
+
+onMounted(() => {
+  currentTime.value = bass.value.currentTime
+  words.forEach((_, index) => {
+    setTimeout(() => {
+      isShown.value[index] = true
+    }, index * 300)
+  })
+})
+
+onUpdated(() => {
+  duration.value = bass.value.duration
+})
+
+watch(bass, (newValue) => {
+  bass.value.ontimeupdate = () => {
+    currentTime.value = newValue.currentTime
+  }
+  bass.value.onended = () => {
+    isPlaying.value = false
+    setTimeout(() => {
+      currentTime.value = 0
+    }, 500)
+  }
+})
+
+const words = ['guess', 'the', 'song']
+const isShown = ref(words.map(() => false))
+</script>
+
+<template>
+  <div class="grid justify-center place-content-center min-h-svh">
+    <NuxtPage />
+    <div
+      class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
+    >
+      <div class="flex flex-row items-center mx-4 gap-1 pb-10">
+        <NuxtLink to="/">
+          <h1 class="text-2xl font-black drop-shadow-md font-serif">
+            <span
+              v-for="(word, index) in words"
+              :key="index"
+              :class="{ show: isShown[index] }"
+            >
+              {{ word }}
+            </span>
+          </h1>
+        </NuxtLink>
+        <sup class="text-xl font-black font-serif text-primary">♫</sup>
+      </div>
+
+      <div
+        class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
+        :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
+      >
+        <button
+          @click="playCurrentStem()"
+          :style="{
+            background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
+          }"
+          class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
+        >
+          <UIcon
+            :name="
+              isPlaying ? 'i-heroicons-pause-circle' : 'i-heroicons-play-circle'
+            "
+            class="text-lg align-middle"
+          />
+          <span class="align-middle">{{ playLabel }}</span>
+        </button>
+        <button
+          v-if="currentRound < 4"
+          @click="skipCurrentRound()"
+          class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
+        >
+          <UIcon name="i-heroicons-arrow-right-circle" class="text-lg" />skip
+          guess
+        </button>
+
+        <audio :src="audioSrc(short, 'bass')" ref="bass" preload="auto" />
+        <audio :src="audioSrc(short, 'drums')" ref="drums" />
+        <audio :src="audioSrc(short, 'vocals')" ref="vocals" />
+        <audio :src="audioSrc(short, 'instru')" ref="instru" />
+      </div>
+
+      <div
+        class="mx-4 text-sm sm:text-base font-thin rounded border py-2 flex flex-row justify-center gap-1 items-center"
+      >
+        <div>YouTube views: {{ currentRound < 1 ? '???' : views }}</div>
+        <div>|</div>
+        <div>Year of release: {{ currentRound < 2 ? '???' : year }}</div>
+      </div>
+
+      <input
+        v-if="currentRound < 4"
+        type="text"
+        v-model="searchQuery"
+        @input="handleInput"
+        placeholder="type your guess here..."
+        class="mx-4 my-8 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
+      />
+
+      <div
+        v-if="!answer || (!correctlyAnswered && currentRound < 3)"
+        class="max-w-[300px] sm:max-w-[350px] min-h-4 max-h-[190px]"
+      >
+        <ClientOnly>
+          <ul class="m-4 max-h-[450px]">
+            <li
+              v-for="(hit, index) of searchHits"
+              :key="hit.name + hit.artist"
+              @click="selectAnswer(index)"
+              class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[300px] sm:w-[350px] my-2 px-2"
+            >
+              {{ hit.artist }} - {{ hit.name }}
+            </li>
+          </ul>
+        </ClientOnly>
+      </div>
+      <div
+        v-if="currentRound < 4"
+        class="mx-4 text-center font-black font-serif"
+      >
+        {{ roundNumberAsString[currentRound + 1] }} of 4 rounds
+      </div>
+
+      <div
+        v-if="correctlyAnswered || currentRound > 3"
+        class="max-w-[300px] sm:max-w-[350px] m-4"
+      >
+        <p class="italic font-serif font-medium pb-2">
+          {{
+            correctlyAnswered
+              ? 'Well done!'
+              : 'No worries! Better luck next time!'
+          }}
+        </p>
+        <div>
+          <img
+            :src="cover"
+            alt="album cover of the song"
+            class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-md"
+          />
+          <NuxtLink :to="link" target="_blank">
+            <span class="text-[10px] align-middle">📺</span> {{ artist }} -
+            {{ title }} (YouTube)
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+    <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10">
+      <NuxtLink :to="`/${updateDate(undefined, -1)}`" class="cursor-pointer"
+        ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
+      /></NuxtLink>
+      <div class="place-self-center">
+        <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
+      </div>
+    </div>
+    <UNotifications color="primary" />
+  </div>
+</template>
+
+<style scoped>
+h1 {
+  display: flex;
+  gap: 0.5rem;
+}
+
+h1 span {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+h1 span.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+</style>

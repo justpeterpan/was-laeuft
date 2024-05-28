@@ -16,4 +16,5 @@ WIP
 - [ ] refactor quiz state logic
 - [ ] optimize play/pause/stop logic
 - [ ] implement scoring system
+- [ ] consolidate [id].vue & index.vue
 - [ ] fix: `You have provided functional plugins in tailwindcss.config in your Nuxt configuration that cannot be serialized for Tailwind Config. Please use tailwind.config or a separate file (specifying in tailwindcss.configPath) to enable it with additional support for IntelliSense and HMR.`
