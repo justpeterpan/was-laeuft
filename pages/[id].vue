@@ -173,11 +173,6 @@ function audioSrc(short: string, stem: string) {
 
 onMounted(() => {
   currentTime.value = bass.value.currentTime
-  words.forEach((_, index) => {
-    setTimeout(() => {
-      isShown.value[index] = true
-    }, index * 300)
-  })
 })
 
 onUpdated(() => {
@@ -195,9 +190,6 @@ watch(bass, (newValue) => {
     }, 500)
   }
 })
-
-const words = ['guess', 'the', 'song']
-const isShown = ref(words.map(() => false))
 </script>
 
 <template>
@@ -206,21 +198,12 @@ const isShown = ref(words.map(() => false))
     <div
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
-      <div class="flex flex-row items-center mx-4 gap-1 pb-10">
-        <NuxtLink to="/">
-          <h1 class="text-2xl font-black drop-shadow-md font-serif">
-            <span
-              v-for="(word, index) in words"
-              :key="index"
-              :class="{ show: isShown[index] }"
-            >
-              {{ word }}
-            </span>
-          </h1>
-        </NuxtLink>
-        <sup class="text-xl font-black font-serif text-primary">♫</sup>
+      <div
+        v-if="currentRound < 4"
+        class="mx-4 text-center font-black font-serif pb-4"
+      >
+        {{ roundNumberAsString[currentRound + 1] }} of 4 rounds
       </div>
-
       <div
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
         :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
@@ -269,7 +252,7 @@ const isShown = ref(words.map(() => false))
         v-model="searchQuery"
         @input="handleInput"
         placeholder="type your guess here..."
-        class="mx-4 my-8 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
+        class="mx-4 mt-8 mb-2 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
       />
 
       <div
@@ -288,12 +271,6 @@ const isShown = ref(words.map(() => false))
             </li>
           </ul>
         </ClientOnly>
-      </div>
-      <div
-        v-if="currentRound < 4"
-        class="mx-4 text-center font-black font-serif"
-      >
-        {{ roundNumberAsString[currentRound + 1] }} of 4 rounds
       </div>
 
       <div
