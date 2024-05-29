@@ -1,18 +1,16 @@
 <script lang="ts" setup>
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useStorage } from '@vueuse/core'
 import confetti from 'canvas-confetti'
-
-useHead({
-  htmlAttrs: { lang: 'en' },
-  title: 'Guess the Song ♫',
-  link: [
-    { rel: 'icon', type: 'image/png', href: '/favicon.png' },
-    { rel: 'apple-touch-icon', type: 'image/png', href: '/favicon.png' },
-  ],
-})
 
 const { params } = useRoute()
 const toast = useToast()
+
+const state = useStorage('answers', new Set())
+
+const date = new Date()
+const today = `${date.getFullYear()}${(date.getMonth() + 1)
+  .toString()
+  .padStart(2, '0')}${date.getDate()}`
 
 function initialDate(date: string | undefined) {
   if (!date) return new Date()
@@ -60,7 +58,7 @@ const roundNumberAsString: { [key: number]: string } = {
 }
 
 const searchQuery = defineModel('searchQuery', { type: String, default: '' })
-const currentRound = ref(0)
+const currentRound = ref(alreadyAnswered() ? 4 : 0)
 const bass = ref() as Ref<HTMLAudioElement>
 const drums = ref() as Ref<HTMLAudioElement>
 const vocals = ref() as Ref<HTMLAudioElement>
@@ -69,9 +67,13 @@ const isPlaying = ref(false)
 const searchHits = ref()
 const answer = ref('')
 const correctlyAnswered = ref(false)
-const playLabel = ref('bass')
+const playLabel = ref(alreadyAnswered() ? 'track' : 'bass')
 const currentTime = ref(0)
 const duration = ref(0)
+
+function alreadyAnswered() {
+  return state.value.has(today)
+}
 
 const progress = computed(() => {
   return duration.value ? (currentTime.value / duration.value) * 100 : 0
@@ -103,6 +105,7 @@ function selectAnswer(index: number) {
     normalizedAnswer.includes(normalizedTitle) &&
     normalizedAnswer.includes(normalizedArtist)
   ) {
+    state.value.add(today)
     correctlyAnswered.value = true
     stopCurrentStem()
     setTimeout(() => {
@@ -194,14 +197,18 @@ watch(bass, (newValue) => {
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
       <div
-        v-if="currentRound < 4"
+        v-if="!alreadyAnswered() && currentRound < 4"
         class="mx-4 text-center font-black font-serif pb-4"
       >
         {{ roundNumberAsString[currentRound + 1] }} of 4 rounds
       </div>
       <div
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
-        :class="[currentRound >= 4 ? 'grid-cols-1' : 'grid-cols-2']"
+        :class="[
+          alreadyAnswered() || currentRound >= 4
+            ? 'grid-cols-1'
+            : 'grid-cols-2',
+        ]"
       >
         <button
           @click="playCurrentStem()"
@@ -219,7 +226,7 @@ watch(bass, (newValue) => {
           <span class="align-middle">{{ playLabel }}</span>
         </button>
         <button
-          v-if="currentRound < 4"
+          v-if="!alreadyAnswered() && currentRound < 4"
           @click="skipCurrentRound()"
           class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
         >
@@ -227,7 +234,7 @@ watch(bass, (newValue) => {
           guess
         </button>
 
-        <audio :src="audioSrc(short, 'bass')" ref="bass" preload="auto" />
+        <audio :src="audioSrc(short, 'bass')" ref="bass" />
         <audio :src="audioSrc(short, 'drums')" ref="drums" />
         <audio :src="audioSrc(short, 'vocals')" ref="vocals" />
         <audio :src="audioSrc(short, 'instru')" ref="instru" />
@@ -236,13 +243,19 @@ watch(bass, (newValue) => {
       <div
         class="mx-4 text-sm sm:text-base font-thin rounded border py-2 flex flex-row justify-center gap-1 items-center"
       >
-        <div>YouTube views: {{ currentRound < 1 ? '???' : views }}</div>
+        <div>
+          YouTube views:
+          {{ !alreadyAnswered() && currentRound < 1 ? '???' : views }}
+        </div>
         <div>|</div>
-        <div>Year of release: {{ currentRound < 2 ? '???' : year }}</div>
+        <div>
+          Year of release:
+          {{ !alreadyAnswered() && currentRound < 2 ? '???' : year }}
+        </div>
       </div>
 
       <input
-        v-if="currentRound < 4"
+        v-if="!alreadyAnswered() && currentRound < 4"
         type="text"
         v-model="searchQuery"
         @input="handleInput"
@@ -254,25 +267,23 @@ watch(bass, (newValue) => {
         v-if="!answer || (!correctlyAnswered && currentRound < 3)"
         class="max-w-[300px] sm:max-w-[350px] min-h-4 max-h-[190px]"
       >
-        <ClientOnly>
-          <ul class="m-4 max-h-[450px]">
-            <li
-              v-for="(hit, index) of searchHits"
-              :key="hit.name + hit.artist"
-              @click="selectAnswer(index)"
-              class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[300px] sm:w-[350px] my-2 px-2"
-            >
-              {{ hit.artist }} - {{ hit.name }}
-            </li>
-          </ul>
-        </ClientOnly>
+        <ul class="m-4 max-h-[450px]">
+          <li
+            v-for="(hit, index) of searchHits"
+            :key="hit.name + hit.artist"
+            @click="selectAnswer(index)"
+            class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[300px] sm:w-[350px] my-2 px-2"
+          >
+            {{ hit.artist }} - {{ hit.name }}
+          </li>
+        </ul>
       </div>
 
       <div
-        v-if="correctlyAnswered || currentRound > 3"
+        v-if="alreadyAnswered() || correctlyAnswered || currentRound > 3"
         class="max-w-[300px] sm:max-w-[350px] m-4"
       >
-        <p class="italic font-serif font-medium pb-2">
+        <p v-if="!alreadyAnswered()" class="italic font-serif font-medium pb-2">
           {{
             correctlyAnswered
               ? 'Well done!'
@@ -285,15 +296,22 @@ watch(bass, (newValue) => {
             alt="album cover of the song"
             class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-md"
           />
-          <NuxtLink :to="link" target="_blank">
-            <span class="text-[10px] align-middle">📺</span> {{ artist }} -
+          <NuxtLink
+            :to="link"
+            target="_blank"
+            class="flex flex-row items-center gap-2"
+          >
+            <UIcon name="i-heroicons-film" /> {{ artist }} -
             {{ title }} (YouTube)
           </NuxtLink>
         </div>
       </div>
     </div>
-    <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10">
-      <NuxtLink :to="`/${updateDate(undefined, -1)}`" class="cursor-pointer"
+
+    <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
+      <NuxtLink
+        :to="`/${updateDate(undefined, -1)}`"
+        class="cursor-pointer max-w-min"
         ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
       /></NuxtLink>
       <div class="place-self-center">

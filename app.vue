@@ -1,13 +1,4 @@
 <script lang="ts" setup>
-useHead({
-  htmlAttrs: { lang: 'en' },
-  title: 'Guess the Song ♫',
-  link: [
-    { rel: 'icon', type: 'image/png', href: '/favicon.png' },
-    { rel: 'apple-touch-icon', type: 'image/png', href: '/favicon.png' },
-  ],
-})
-
 onMounted(() => {
   words.forEach((_, index) => {
     setTimeout(() => {

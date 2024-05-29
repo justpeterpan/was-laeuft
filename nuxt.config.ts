@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  ssr: false,
   modules: ['@vueuse/nuxt', '@nuxt/ui'],
   runtimeConfig: {
     lastfm: process.env.LASTFM || '',
@@ -17,6 +18,14 @@ export default defineNuxtConfig({
   tailwindcss: {
     config: {
       plugins: [require('tailwindcss-animated')],
+    },
+  },
+  app: {
+    head: {
+      htmlAttrs: {
+        lang: 'en',
+      },
+      title: 'Guess the Song ♫',
     },
   },
 })
