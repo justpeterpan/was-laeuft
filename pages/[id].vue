@@ -191,8 +191,7 @@ watch(bass, (newValue) => {
 </script>
 
 <template>
-  <div class="grid justify-center place-content-center min-h-svh">
-    <NuxtPage />
+  <div class="grid justify-center place-content-center">
     <div
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
@@ -306,24 +305,6 @@ watch(bass, (newValue) => {
           </NuxtLink>
         </div>
       </div>
-    </div>
-
-    <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
-      <NuxtLink
-        v-if="updateDate(useRoute().params.id as string, -1) >= $config.public.init"
-        :to="`/${updateDate(useRoute().params.id as string, -1)}`"
-        class="cursor-pointer place-self-start"
-        ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
-      /></NuxtLink>
-      <div class="place-self-center col-start-2">
-        <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
-      </div>
-      <NuxtLink
-        v-if="updateDate(useRoute().params.id as string, 1) <= today"
-        :to="updateDate(useRoute().params.id as string, 1) < today ? `/${updateDate(useRoute().params.id as string, 1)}` : '/'"
-        class="cursor-pointer place-self-end col-start-3"
-        ><UIcon name="i-heroicons-arrow-right-circle-solid" class="w-6 h-6"
-      /></NuxtLink>
     </div>
     <UNotifications color="primary" />
   </div>

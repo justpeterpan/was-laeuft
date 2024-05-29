@@ -10,9 +10,10 @@ WIP
 
 ## TODOS
 
+- [ ] do not send search query if empty
 - [ ] custom error page
 - [ ] animations & micro animations
-- [ ] navigate between songs
+- [x] navigate between songs
 - [ ] refactor quiz state logic
 - [ ] optimize play/pause/stop logic
 - [ ] implement scoring system

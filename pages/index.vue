@@ -89,7 +89,7 @@ async function search() {
 
 const handleInput = useDebounceFn(async () => {
   await search()
-}, 100)
+}, 300)
 
 function selectAnswer(index: number) {
   const selectedHit = searchHits.value[index]
@@ -191,8 +191,7 @@ watch(bass, (newValue) => {
 </script>
 
 <template>
-  <div class="grid justify-center place-content-center min-h-svh">
-    <NuxtPage />
+  <div class="grid justify-center place-content-center">
     <div
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
@@ -305,17 +304,6 @@ watch(bass, (newValue) => {
             {{ title }} (YouTube)
           </NuxtLink>
         </div>
-      </div>
-    </div>
-
-    <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
-      <NuxtLink
-        :to="`/${updateDate(undefined, -1)}`"
-        class="cursor-pointer max-w-min"
-        ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
-      /></NuxtLink>
-      <div class="place-self-center">
-        <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
       </div>
     </div>
     <UNotifications color="primary" />

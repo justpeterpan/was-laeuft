@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
   }
   const config = useRuntimeConfig()
   const { searchQuery } = await readBody(event)
+  if (!searchQuery) return []
+
   const response = await $fetch<result>(
     `http://ws.audioscrobbler.com/2.0/?method=track.search&track=${searchQuery}&api_key=${config.lastfm}&format=json`
   )
@@ -15,5 +17,5 @@ export default defineEventHandler(async (event) => {
     name: track.name,
     artist: track.artist,
   }))
-  return slimResponse.slice(0, 5)
+  return slimResponse.slice(0, 5) ?? []
 })
