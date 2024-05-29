@@ -22,12 +22,12 @@ function updateDate(date: string | undefined, days: number) {
     .padStart(2, '0')}${newDate.getDate().toString().padStart(2, '0')}`
 }
 
-watch(
-  () => route.params.id,
-  async (newId) => {
-    console.log(newId)
-  }
-)
+// watch(
+//   () => route.params.id,
+//   async (newId) => {
+//     // console.log(newId)
+//   }
+// )
 
 onMounted(() => {
   words.forEach((_, index) => {

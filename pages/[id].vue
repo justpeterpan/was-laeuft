@@ -7,26 +7,17 @@ const toast = useToast()
 
 const state = useStorage('answers', new Set())
 
-const date = new Date()
-const today = `${date.getFullYear()}${(date.getMonth() + 1)
-  .toString()
-  .padStart(2, '0')}${date.getDate()}`
-
-function initialDate(date: string | undefined) {
-  if (!date) return new Date()
-  const year = parseInt(date.substring(0, 4), 10)
-  const month = parseInt(date.substring(4, 6), 10) - 1
-  const day = parseInt(date.substring(6, 8), 10)
-
-  return new Date(year, month, day)
-}
-function updateDate(date: string | undefined, days: number) {
-  const newDate = new Date(initialDate(date))
-  newDate.setDate(newDate.getDate() + days)
-  return `${newDate.getFullYear()}${(newDate.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}${newDate.getDate().toString().padStart(2, '0')}`
-}
+definePageMeta({
+  pageTransition: {
+    name: 'slide-right',
+    mode: 'out-in',
+  },
+  middleware(to, from) {
+    if (to.meta.pageTransition && typeof to.meta.pageTransition !== 'boolean')
+      to.meta.pageTransition.name =
+        +to.params.id > +from.params.id ? 'slide-left' : 'slide-right'
+  },
+})
 
 const { year, artist, cover, views, link, short, title } = await $fetch(
   '/api/s',
@@ -309,3 +300,28 @@ watch(bass, (newValue) => {
     <UNotifications color="primary" />
   </div>
 </template>
+
+<style>
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.2s;
+}
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+</style>
