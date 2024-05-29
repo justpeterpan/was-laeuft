@@ -14,12 +14,19 @@ function initialDate(date: string | undefined) {
 
   return new Date(year, month, day)
 }
+
 function updateDate(date: string | undefined, days: number) {
   const newDate = new Date(initialDate(date))
   newDate.setDate(newDate.getDate() + days)
   return `${newDate.getFullYear()}${(newDate.getMonth() + 1)
     .toString()
     .padStart(2, '0')}${newDate.getDate().toString().padStart(2, '0')}`
+}
+
+const slideDirection = ref<'slide-left' | 'slide-right'>('slide-right')
+
+function handleSlide(direction: 'left' | 'right') {
+  slideDirection.value = `slide-${direction}`
 }
 
 // watch(
@@ -86,12 +93,13 @@ const isShown = ref(words.map(() => false))
       </NuxtLink>
       <sup class="text-xl font-black font-serif text-primary">♫</sup>
     </div>
-    <NuxtPage />
+    <NuxtPage :transition="{ name: slideDirection, mode: 'out-in' }" />
     <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
       <NuxtLink
         v-if="updateDate(useRoute().params.id as string, -1) >= $config.public.init"
         :to="`/${updateDate(route.params.id as string, -1)}`"
         class="cursor-pointer max-w-min"
+        @click="handleSlide('right')"
         ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
       /></NuxtLink>
       <div class="place-self-center col-start-2">
@@ -101,13 +109,14 @@ const isShown = ref(words.map(() => false))
         v-if="updateDate(route.params.id as string, 1) <= today"
         :to="updateDate(route.params.id as string, 1) < today ? `/${updateDate(route.params.id as string, 1)}` : '/'"
         class="cursor-pointer place-self-end col-start-3"
+        @click="handleSlide('left')"
         ><UIcon name="i-heroicons-arrow-right-circle-solid" class="w-6 h-6"
       /></NuxtLink>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style>
 h1 {
   display: flex;
   gap: 0.5rem;
@@ -123,5 +132,28 @@ h1 span {
 h1 span.show {
   transform: translateY(0);
   opacity: 1;
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.2s;
+}
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translate(50px, 0);
 }
 </style>
