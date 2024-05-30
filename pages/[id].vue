@@ -218,9 +218,7 @@ watch(bass, (newValue) => {
         <audio :src="audioSrc(short, 'instru')" ref="instru" />
       </div>
 
-      <div
-        class="mx-4 text-sm sm:text-base font-thin rounded border py-2 flex flex-row justify-center gap-1 items-center"
-      >
+      <div class="mx-4 text-sm sm:text-base font-thin py-2 flex flex-row gap-1">
         <div>
           YouTube views:
           {{ !alreadyAnswered() && currentRound < 1 ? '???' : views }}

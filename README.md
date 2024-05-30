@@ -11,7 +11,7 @@ WIP
 ## TODOS
 
 - [ ] do not send search query if empty
-- [ ] fix page transition direction on calendar navigation
+- [x] fix page transition direction on calendar navigation
 - [ ] fix server time offset bug
 - [ ] custom error page
 - [ ] animations & micro animations
