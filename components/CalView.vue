@@ -17,11 +17,11 @@
             .toString()
             .padStart(2, '0')}` <= config.public.init || currentDate < day
         "
-        class="w-full h-full font-extralight border bg-white/10 border-white/10 items-center justify-items-center grid rounded hover:bg-white/20"
+        class="w-full h-full font-extralight items-center justify-items-center grid rounded"
         :class="{
           'border-primary border-2 font-bold':
             day === Number(route.params.id?.slice(-2)) ?? currentDate,
-          'text-white/10 bg-white/5 border-white/5 hover:bg-white/5':
+          'border bg-neutral-400/5 border-neutral-400/5 text-neutral-400/40 dark:text-white/10 dark:bg-white/5 dark:border-white/5':
             `${year}${(month + 1).toString().padStart(2, '0')}${(day + 1)
               .toString()
               .padStart(2, '0')}` <= config.public.init || currentDate < day,
@@ -41,9 +41,9 @@
             ? toLink(day)
             : '/'
         "
-        class="cursor-pointer w-full h-full font-extralight border bg-white/10 border-white/10 items-center justify-items-center grid rounded hover:bg-white/20"
+        class="cursor-pointer w-full h-full font-extralight border bg-neutral-400/10 dark:bg-white/10 border-neutral-400/15 dark:border-white/10 items-center justify-items-center grid rounded hover:bg-neutral-400/20 dark:hover:bg-white/20"
         :class="{
-          '!border-white/75 border font-bold':
+          'dark:!border-white/75 !border-neutral-400/75 border font-bold':
             day === Number(route.params.id?.slice(-2)) ||
             (typeof route.params.id === 'undefined' && day === currentDate),
           '!bg-green-500/50 hover:!bg-green-500/75': state.has(

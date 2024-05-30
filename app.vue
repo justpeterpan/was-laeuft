@@ -96,7 +96,7 @@ const isShown = ref(words.map(() => false))
         ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
       /></NuxtLink>
       <div class="place-self-center col-start-2">
-        <UPopover :popper="{ placement: 'top', offsetDistance: 0 }">
+        <UPopover :popper="{ placement: 'top', offsetDistance: 4 }">
           <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
           <template #panel="{ close }">
             <div class="w-[300px] sm:w-[350px] h-64 p-4">
