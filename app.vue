@@ -23,7 +23,7 @@ function updateDate(date: string | undefined, days: number) {
     .padStart(2, '0')}${newDate.getDate().toString().padStart(2, '0')}`
 }
 
-const slideDirection = ref<'slide-left' | 'slide-right'>('slide-right')
+const slideDirection = useSlideDirection()
 
 function handleSlide(direction: 'left' | 'right') {
   slideDirection.value = `slide-${direction}`

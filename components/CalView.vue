@@ -52,6 +52,14 @@
               .padStart(2, '0')}`
           ),
         }"
+        @click="
+          setSlideDirection(
+            `${year}${(month + 1).toString().padStart(2, '0')}${day
+              .toString()
+              .padStart(2, '0')}`,
+            route.params.id as string
+          )
+        "
       >
         {{ day.toString().padStart(2, '0') }}
       </NuxtLink>
@@ -78,5 +86,14 @@ const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 // prettier-ignore
 function toLink(day: number) {
   return '/' + year + (month + 1).toString().padStart(2, '0') + day.toString().padStart(2, '0')
+}
+
+const useDirection = useSlideDirection()
+function setSlideDirection(toDate: string, fromDate: string | undefined) {
+  if (fromDate && toDate > fromDate) {
+    useDirection.value = 'slide-right'
+  } else {
+    useDirection.value = 'slide-left'
+  }
 }
 </script>
