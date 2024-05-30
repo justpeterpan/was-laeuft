@@ -99,8 +99,8 @@ const isShown = ref(words.map(() => false))
         <UPopover :popper="{ placement: 'top', offsetDistance: 4 }">
           <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
           <template #panel="{ close }">
-            <div class="w-[300px] sm:w-[350px] h-64 p-4">
-              <CalView @click="close" />
+            <div class="w-[360px] h-72">
+              <CalView @close-popup="close" />
             </div>
           </template>
         </UPopover>

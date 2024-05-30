@@ -16,6 +16,7 @@ const { year, artist, cover, views, link, short, title } = await $fetch(
   '/api/s',
   {
     lazy: true,
+    server: false,
     method: 'POST',
     body: JSON.stringify({ d: params.id ?? today }),
   }
@@ -32,13 +33,6 @@ function wow() {
     spread: randomInRange(50, 70),
     particleCount: randomInRange(50, 100),
   })
-}
-
-const roundNumberAsString: { [key: number]: string } = {
-  1: '1ˢᵗ',
-  2: '2ⁿᵈ',
-  3: '3ʳᵈ',
-  4: '4ᵗʰ',
 }
 
 const searchQuery = defineModel('searchQuery', { type: String, default: '' })
@@ -183,7 +177,9 @@ watch(bass, (newValue) => {
         v-if="!alreadyAnswered() && currentRound < 4"
         class="mx-4 text-center font-black font-serif pb-4"
       >
-        {{ roundNumberAsString[currentRound + 1] }} of 4 rounds
+        {{ numberAsString[currentRound + 1] }} of 4 rounds on
+        {{ mapMonthNumberToName(date.getMonth() + 1) }},
+        {{ numberAsString[date.getDate()] }}
       </div>
       <div
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"

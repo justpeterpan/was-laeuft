@@ -11,6 +11,7 @@ const { year, artist, cover, views, link, short, title } = await $fetch(
   '/api/s',
   {
     lazy: true,
+    server: false,
     method: 'POST',
     body: JSON.stringify({ d: params.id }),
   }
@@ -29,12 +30,8 @@ function wow() {
   })
 }
 
-const roundNumberAsString: { [key: number]: string } = {
-  1: '1ˢᵗ',
-  2: '2ⁿᵈ',
-  3: '3ʳᵈ',
-  4: '4ᵗʰ',
-}
+const currentDate = (params.id as string).substring(6, 8)
+const currentMonth = (params.id as string).substring(4, 6)
 
 const searchQuery = defineModel('searchQuery', { type: String, default: '' })
 const currentRound = ref(alreadyAnswered() ? 4 : 0)
@@ -178,7 +175,9 @@ watch(bass, (newValue) => {
         v-if="!alreadyAnswered() && currentRound < 4"
         class="mx-4 text-center font-black font-serif pb-4"
       >
-        {{ roundNumberAsString[currentRound + 1] }} of 4 rounds
+        {{ numberAsString[currentRound + 1] }} of 4 rounds on
+        {{ mapMonthNumberToName(+currentMonth) }},
+        {{ numberAsString[+currentDate] }}
       </div>
       <div
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
