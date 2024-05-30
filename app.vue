@@ -29,13 +29,6 @@ function handleSlide(direction: 'left' | 'right') {
   slideDirection.value = `slide-${direction}`
 }
 
-// watch(
-//   () => route.params.id,
-//   async (newId) => {
-//     // console.log(newId)
-//   }
-// )
-
 onMounted(() => {
   words.forEach((_, index) => {
     setTimeout(() => {
@@ -43,6 +36,8 @@ onMounted(() => {
     }, index * 300)
   })
 })
+
+const open = defineModel('open', { type: Boolean, default: false })
 
 const words = ['guess', 'the', 'song']
 const isShown = ref(words.map(() => false))
@@ -103,7 +98,17 @@ const isShown = ref(words.map(() => false))
         ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
       /></NuxtLink>
       <div class="place-self-center col-start-2">
-        <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
+        <UPopover
+          mode="hover"
+          :popper="{ placement: 'top', offsetDistance: 0 }"
+        >
+          <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
+          <template #panel="{ close }">
+            <div class="w-[300px] sm:w-[350px] h-64 p-4">
+              <CalView @click="close" />
+            </div>
+          </template>
+        </UPopover>
       </div>
       <NuxtLink
         v-if="updateDate(route.params.id as string, 1) <= today"
