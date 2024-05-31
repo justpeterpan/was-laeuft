@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 const route = useRoute()
 
+definePageMeta({
+  middleware: 'redirect',
+})
+
 const date = new Date()
 const today = `${date.getFullYear()}${(date.getMonth() + 1)
   .toString()

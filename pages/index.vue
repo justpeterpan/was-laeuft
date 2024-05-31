@@ -2,6 +2,10 @@
 import { useDebounceFn, useStorage } from '@vueuse/core'
 import confetti from 'canvas-confetti'
 
+definePageMeta({
+  middleware: 'redirect',
+})
+
 const { params } = useRoute()
 const toast = useToast()
 
