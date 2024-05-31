@@ -14,7 +14,7 @@ const state = useStorage('answers', new Set())
 const date = new Date()
 const today = `${date.getFullYear()}${(date.getMonth() + 1)
   .toString()
-  .padStart(2, '0')}${date.getDate()}`
+  .padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`
 
 const { year, artist, cover, views, link, short, title } = await $fetch(
   '/api/s',

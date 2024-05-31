@@ -30,7 +30,10 @@
       <div v-for="empty in firstDay" :key="'empty' + empty" />
       <div v-for="day in daysInMonth" class="w-full h-full">
         <div
-          v-if="dateToCompare(day) <= init || currentDate < day"
+          v-if="
+            dateToCompare(day) <= init ||
+            (month + 1 >= currentMonth && currentDate < day)
+          "
           class="w-full h-full font-extralight items-center justify-items-center grid rounded"
           :class="{
             'border-primary border-2 font-bold':
@@ -45,23 +48,14 @@
         </div>
         <NuxtLink
           v-else
-          :to="
-            `${year}${(month + 1).toString().padStart(2, '0')}${(day + 1)
-              .toString()
-              .padStart(2, '0')}` <
-            `${year}${(month + 1).toString().padStart(2, '0')}${(
-              currentDate + 1
-            )
-              .toString()
-              .padStart(2, '0')}`
-              ? toLink(day)
-              : '/'
-          "
+          :to="dayOfMonth(day) < currentDay() ? toLink(day) : '/'"
           class="cursor-pointer w-full h-full font-extralight border bg-neutral-400/10 dark:bg-white/10 border-neutral-400/15 dark:border-white/10 items-center justify-items-center grid rounded hover:bg-neutral-400/20 dark:hover:bg-white/20"
           :class="{
             'dark:!border-white/75 !border-neutral-400/75 border font-bold':
               day === Number(route.params.id?.slice(-2)) ||
-              (route.params.id === '' && day === currentDate),
+              (route.params.id === '' &&
+                day === currentDate &&
+                month === currentMonth),
             '!bg-green-300/50 hover:!bg-green-300/75': state.has(
               `${year}${(month + 1).toString().padStart(2, '0')}${day
                 .toString()
@@ -103,6 +97,7 @@ const { public: { init } } = useRuntimeConfig()
 const state = useStorage('answers', new Set())
 
 const currentDate = new Date().getDate()
+const currentMonth = new Date().getMonth() + 1
 const month = ref(new Date().getMonth())
 const year = ref(new Date().getFullYear())
 
@@ -133,6 +128,22 @@ function setSlideDirection(toDate: string, fromDate: string | undefined) {
     useDirection.value = 'slide-right'
   }
   emit('closePopup', true)
+}
+
+function dayOfMonth(day: number) {
+  return parseInt(
+    `${year.value}${(month.value + 1).toString().padStart(2, '0')}${day
+      .toString()
+      .padStart(2, '0')}`
+  )
+}
+
+function currentDay() {
+  return parseInt(
+    `${year.value}${currentMonth.toString().padStart(2, '0')}${currentDate
+      .toString()
+      .padStart(2, '0')}`
+  )
 }
 
 function changeMonth(direction: number) {
