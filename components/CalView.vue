@@ -2,7 +2,7 @@
   <div class="grid h-full w-full grid-cols-9 auto-cols-fr">
     <div class="place-self-center">
       <div
-        v-if="month + 1 !== +config.public.init.substring(4, 6)"
+        v-if="month + 1 !== +init.substring(4, 6)"
         class="max-w-max p-1 rounded-full cursor-pointer"
         @click="changeMonth(-1)"
       >
@@ -30,7 +30,7 @@
       <div v-for="empty in firstDay" :key="'empty' + empty" />
       <div v-for="day in daysInMonth" class="w-full h-full">
         <div
-          v-if="dateToCompare(day) <= config.public.init || currentDate < day"
+          v-if="dateToCompare(day) <= init || currentDate < day"
           class="w-full h-full font-extralight items-center justify-items-center grid rounded"
           :class="{
             'border-primary border-2 font-bold':
@@ -38,7 +38,7 @@
             'border bg-neutral-400/5 border-neutral-400/5 text-neutral-400/40 dark:text-white/10 dark:bg-white/5 dark:border-white/5':
               `${year}${(month + 1).toString().padStart(2, '0')}${(day + 1)
                 .toString()
-                .padStart(2, '0')}` <= config.public.init || currentDate < day,
+                .padStart(2, '0')}` <= init || currentDate < day,
           }"
         >
           {{ day.toString().padStart(2, '0') }}
@@ -97,7 +97,7 @@
 import { useStorage } from '@vueuse/core'
 
 const route = useRoute()
-const config = useRuntimeConfig()
+const { public: { init } } = useRuntimeConfig()
 
 const state = useStorage('answers', new Set())
 
