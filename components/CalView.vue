@@ -61,8 +61,8 @@
           :class="{
             'dark:!border-white/75 !border-neutral-400/75 border font-bold':
               day === Number(route.params.id?.slice(-2)) ||
-              (typeof route.params.id === 'undefined' && day === currentDate),
-            '!bg-green-500/50 hover:!bg-green-500/75': state.has(
+              (route.params.id === '' && day === currentDate),
+            '!bg-green-300/50 hover:!bg-green-300/75': state.has(
               `${year}${(month + 1).toString().padStart(2, '0')}${day
                 .toString()
                 .padStart(2, '0')}`
@@ -97,11 +97,12 @@
 import { useStorage } from '@vueuse/core'
 
 const route = useRoute()
+// prettier-ignore
 const { public: { init } } = useRuntimeConfig()
 
 const state = useStorage('answers', new Set())
 
-const currentDate = ref(new Date().getDate())
+const currentDate = new Date().getDate()
 const month = ref(new Date().getMonth())
 const year = ref(new Date().getFullYear())
 

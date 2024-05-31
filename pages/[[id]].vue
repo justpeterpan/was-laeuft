@@ -193,6 +193,7 @@ watch(bass, (newValue) => {
         {{ numberAsString[+currentDate] }}
       </div>
       <div
+        v-if="!alreadyAnswered() || currentRound < 4"
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
         :class="[
           alreadyAnswered() || currentRound >= 4
@@ -223,14 +224,18 @@ watch(bass, (newValue) => {
           <UIcon name="i-heroicons-arrow-right-circle" class="text-lg" />skip
           guess
         </button>
-
+      </div>
+      <div class="hidden">
         <audio :src="audioSrc(short, 'bass')" ref="bass" />
         <audio :src="audioSrc(short, 'drums')" ref="drums" />
         <audio :src="audioSrc(short, 'vocals')" ref="vocals" />
         <audio :src="audioSrc(short, 'instru')" ref="instru" />
       </div>
 
-      <div class="mx-4 text-sm sm:text-base font-thin py-2 flex flex-row gap-1">
+      <div
+        v-if="!alreadyAnswered() || currentRound < 4"
+        class="mx-4 text-sm sm:text-base font-thin py-2 flex flex-row gap-1"
+      >
         <div>
           YouTube views:
           {{ !alreadyAnswered() && currentRound < 1 ? '???' : views }}
@@ -252,7 +257,10 @@ watch(bass, (newValue) => {
       />
 
       <div
-        v-if="!answer || (!correctlyAnswered && currentRound < 3)"
+        v-if="
+          (!alreadyAnswered() && !answer) ||
+          (!correctlyAnswered && currentRound < 3)
+        "
         class="max-w-[300px] sm:max-w-[350px] min-h-4 max-h-[190px]"
       >
         <ul class="m-4 max-h-[450px]">
@@ -279,18 +287,32 @@ watch(bass, (newValue) => {
           }}
         </p>
         <div>
-          <img
-            :src="cover"
-            alt="album cover of the song"
-            class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-md"
-          />
+          <div class="relative grid items-center place-items-center">
+            <img
+              :src="cover"
+              alt="album cover of the song"
+              class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-lg"
+            />
+            <div
+              class="absolute cursor-pointer pt-2 pb-0.5 px-2 bg-black/80 rounded-full opacity-90"
+              @click="playCurrentStem()"
+            >
+              <UIcon
+                :name="
+                  isPlaying
+                    ? 'i-heroicons-pause-circle'
+                    : 'i-heroicons-play-circle-16-solid'
+                "
+                class="w-8 h-8 shadow-md bg-white rounded-full"
+              />
+            </div>
+          </div>
           <NuxtLink
             :to="link"
             target="_blank"
             class="flex flex-row items-center gap-2"
           >
-            <UIcon name="i-heroicons-film" /> {{ artist }} -
-            {{ title }} (YouTube)
+            ♫ {{ artist }} - {{ title }}
           </NuxtLink>
         </div>
       </div>
