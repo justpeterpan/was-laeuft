@@ -22,7 +22,7 @@ const { year, artist, cover, views, link, short, title } = await $fetch(
     lazy: true,
     server: false,
     method: 'POST',
-    body: JSON.stringify({ d: params.id ?? today }),
+    body: JSON.stringify({ d: params.id ? params.id : today }),
   }
 )
 
@@ -39,6 +39,13 @@ function wow() {
   })
 }
 
+const currentDate = params.id
+  ? (params.id as string).substring(6, 8)
+  : today.substring(6, 8)
+const currentMonth = params.id
+  ? (params.id as string).substring(4, 6)
+  : today.substring(4, 6)
+
 const searchQuery = defineModel('searchQuery', { type: String, default: '' })
 const currentRound = ref(alreadyAnswered() ? 4 : 0)
 const bass = ref() as Ref<HTMLAudioElement>
@@ -54,7 +61,7 @@ const currentTime = ref(0)
 const duration = ref(0)
 
 function alreadyAnswered() {
-  return state.value.has(today)
+  return params.id ? state.value.has(params.id) : state.value.has(today)
 }
 
 const progress = computed(() => {
@@ -87,7 +94,7 @@ function selectAnswer(index: number) {
     normalizedAnswer.includes(normalizedTitle) &&
     normalizedAnswer.includes(normalizedArtist)
   ) {
-    state.value.add(today)
+    state.value.add(params.id ? params.id : today)
     correctlyAnswered.value = true
     stopCurrentStem()
     setTimeout(() => {
@@ -182,8 +189,8 @@ watch(bass, (newValue) => {
         class="mx-4 text-center font-black font-serif pb-4"
       >
         {{ numberAsString[currentRound + 1] }} of 4 rounds on
-        {{ mapMonthNumberToName(date.getMonth() + 1) }},
-        {{ numberAsString[date.getDate()] }}
+        {{ mapMonthNumberToName(+currentMonth) }},
+        {{ numberAsString[+currentDate] }}
       </div>
       <div
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
