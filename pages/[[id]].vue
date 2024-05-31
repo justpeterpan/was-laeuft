@@ -294,6 +294,12 @@ watch(bass, (newValue) => {
               class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-lg"
             />
             <div
+              class="absolute bottom-2 rounded-bl-lg rounded-br-lg h-4 w-full"
+              :style="{
+                background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
+              }"
+            />
+            <div
               class="absolute cursor-pointer pt-2 pb-0.5 px-2 bg-black/80 rounded-full opacity-90"
               @click="playCurrentStem()"
             >
