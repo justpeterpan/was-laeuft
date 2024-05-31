@@ -318,7 +318,7 @@ watch(bass, (newValue) => {
             target="_blank"
             class="flex flex-row items-center gap-2"
           >
-            ♫ {{ artist }} - {{ title }}
+            ♫ {{ artist }} - {{ title }} ({{ year }})
           </NuxtLink>
         </div>
       </div>
