@@ -11,11 +11,6 @@ const toast = useToast()
 
 const state = useStorage('answers', new Set())
 
-const date = new Date()
-const today = `${date.getFullYear()}${(date.getMonth() + 1)
-  .toString()
-  .padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`
-
 const { year, artist, cover, views, link, short, title } = await $fetch(
   '/api/s',
   {
@@ -184,11 +179,10 @@ watch(bass, (newValue) => {
     <div
       class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
     >
-      <div
-        v-if="!alreadyAnswered() && currentRound < 4"
-        class="mx-4 text-center font-black font-serif pb-4"
-      >
-        {{ numberAsString[currentRound + 1] }} of 4 rounds on
+      <div class="mx-4 text-center font-black font-serif pb-4">
+        <span v-if="!alreadyAnswered() && currentRound < 4"
+          >{{ numberAsString[currentRound + 1] }} of 4 rounds on
+        </span>
         {{ mapMonthNumberToName(+currentMonth) }},
         {{ numberAsString[+currentDate] }}
       </div>
