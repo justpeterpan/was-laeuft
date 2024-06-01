@@ -2,7 +2,7 @@
   <div class="grid h-full w-full grid-cols-9 auto-cols-fr">
     <div class="place-self-center">
       <div
-        v-if="month + 1 !== +firstMonthWithSongs"
+        v-if="monthFromParams + 1 !== +firstMonthWithSongs"
         class="max-w-max p-1 rounded-full cursor-pointer"
         @click="changeMonth(-1)"
       >
@@ -11,13 +11,13 @@
     </div>
     <div
       class="grid grid-cols-7 place-items-center w-full h-full rounded gap-1 pt-8 pb-4 col-span-7"
-      :class="[month === 5 ? 'grid-rows-7' : 'grid-rows-6']"
+      :class="[monthFromParams === 5 ? 'grid-rows-7' : 'grid-rows-6']"
     >
       <div
         class="absolute top-3 w-[50%] left-[25%] font-extralight font-serif italic"
       >
         <UDivider>
-          {{ mapMonthNumberToName(month + 1) }}
+          {{ mapMonthNumberToName(monthFromParams + 1) }}
         </UDivider>
       </div>
       <div
@@ -32,18 +32,15 @@
         <div
           v-if="
             dayOfMonth(day, 1) <= +init ||
-            (month + 1 >= currentMonth && currentDate < day)
+            (monthFromParams + 1 >= currentMonth && currentDate < day)
           "
           class="w-full h-full font-extralight items-center justify-items-center grid rounded"
           :class="{
-            'border-primary border-2 font-bold':
-              day === Number(id?.slice(-2)) ?? currentDate,
             'border bg-neutral-400/5 border-neutral-400/5 text-neutral-400/40 dark:text-white/10 dark:bg-white/5 dark:border-white/5':
               dayOfMonth(day, 1) <= +init || currentDate < day,
           }"
         >
           {{ day.toString().padStart(2, '0') }}
-          <!-- {{ dayOfMonth }} -->
         </div>
         <NuxtLink
           v-else
@@ -52,7 +49,9 @@
           :class="{
             'dark:!border-white/75 !border-neutral-400/75 border font-bold':
               day === Number(id?.slice(-2)) ||
-              (id === '' && day === currentDate && month === currentMonth),
+              (id === '' &&
+                day === currentDate &&
+                monthFromParams === currentMonthParams),
             '!bg-green-300/50 hover:!bg-green-300/75': state.has(
               dayOfMonth(day).toString()
             ),
@@ -65,7 +64,7 @@
     </div>
     <div class="place-self-center">
       <div
-        v-if="currentMonth > month + 1"
+        v-if="currentMonth > monthFromParams + 1"
         class="max-w-max p-1 rounded-full place-self-center cursor-pointer"
         @click="changeMonth(1)"
       >
@@ -90,16 +89,23 @@ const firstMonthWithSongs = init.substring(4, 6)
 const currentDate = new Date().getDate()
 const currentMonth = new Date().getMonth() + 1
 
-const month = ref(new Date().getMonth())
+const currentMonthParams = ref(
+  id !== '' ? +id?.slice(4, 6) - 1 : currentMonth - 1
+)
+const monthFromParams = ref(id !== '' ? +id?.slice(4, 6) - 1 : currentMonth - 1)
 const year = ref(new Date().getFullYear())
 
-const firstDay = computed(() => new Date(2024, month.value, 1).getDay())
-const daysInMonth = computed(() => new Date(2024, month.value + 1, 0).getDate())
+const firstDay = computed(() =>
+  new Date(2024, monthFromParams.value, 1).getDay()
+)
+const daysInMonth = computed(() =>
+  new Date(2024, monthFromParams.value + 1, 0).getDate()
+)
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 // prettier-ignore
 function toLink(day: number) {
-  return '/' + year.value + (month.value + 1).toString().padStart(2, '0') + day.toString().padStart(2, '0')
+  return '/' + year.value + (monthFromParams.value + 1).toString().padStart(2, '0') + day.toString().padStart(2, '0')
 }
 
 const emit = defineEmits(['closePopup'])
@@ -116,7 +122,7 @@ function setSlideDirection(toDate: string, fromDate: string | undefined) {
 
 function dayOfMonth(day: number, offset: number = 0) {
   return parseInt(
-    `${year.value}${(month.value + 1).toString().padStart(2, '0')}${(
+    `${year.value}${(monthFromParams.value + 1).toString().padStart(2, '0')}${(
       day + offset
     )
       .toString()
@@ -133,6 +139,6 @@ function currentDay() {
 }
 
 function changeMonth(direction: number) {
-  month.value += direction
+  monthFromParams.value += direction
 }
 </script>
