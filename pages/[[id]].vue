@@ -187,7 +187,7 @@ watch(bass, (newValue) => {
         {{ numberAsString[+currentDate] }}
       </div>
       <div
-        v-if="!alreadyAnswered() || currentRound < 4"
+        v-if="currentRound < 4"
         class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
         :class="[
           alreadyAnswered() || currentRound >= 4
@@ -227,7 +227,7 @@ watch(bass, (newValue) => {
       </div>
 
       <div
-        v-if="!alreadyAnswered() || currentRound < 4"
+        v-if="currentRound < 4"
         class="mx-4 text-sm sm:text-base font-thin py-2 flex flex-row gap-1"
       >
         <div>
@@ -251,10 +251,7 @@ watch(bass, (newValue) => {
       />
 
       <div
-        v-if="
-          (!alreadyAnswered() && !answer) ||
-          (!correctlyAnswered && currentRound < 3)
-        "
+        v-if="currentRound < 4"
         class="max-w-[300px] sm:max-w-[350px] min-h-4 max-h-[190px]"
       >
         <ul class="m-4 max-h-[450px]">
