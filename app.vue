@@ -5,11 +5,6 @@ definePageMeta({
   middleware: 'redirect',
 })
 
-const date = new Date()
-const today = `${date.getFullYear()}${(date.getMonth() + 1)
-  .toString()
-  .padStart(2, '0')}${date.getDate()}`
-
 function initialDate(date: string | undefined) {
   if (!date) return new Date()
   const year = parseInt(date.substring(0, 4), 10)
@@ -114,8 +109,9 @@ const isShown = ref(words.map(() => false))
         :to="updateDate(route.params.id as string, 1) < today ? `/${updateDate(route.params.id as string, 1)}` : '/'"
         class="cursor-pointer place-self-end col-start-3"
         @click="handleSlide('left')"
-        ><UIcon name="i-heroicons-arrow-right-circle-solid" class="w-6 h-6"
-      /></NuxtLink>
+      >
+        <UIcon name="i-heroicons-arrow-right-circle-solid" class="w-6 h-6" />
+      </NuxtLink>
     </div>
   </div>
 </template>
