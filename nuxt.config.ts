@@ -26,6 +26,12 @@ export default defineNuxtConfig({
         lang: 'en',
       },
       title: 'Guess the Song ♫',
+      meta: [
+        {
+          property: 'og:description',
+          content: 'Guess the Song based on bass, drums, vocals & instruments ',
+        },
+      ],
     },
   },
 })
