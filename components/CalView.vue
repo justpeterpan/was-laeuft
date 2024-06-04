@@ -1,5 +1,5 @@
 <template>
-  <div class="grid h-full w-full grid-cols-9 auto-cols-fr">
+  <div class="grid h-full w-full grid-cols-9 auto-cols-fr relative">
     <div class="place-self-center">
       <div
         v-if="monthFromParams + 1 !== +firstMonthWithSongs"
@@ -10,7 +10,7 @@
       </div>
     </div>
     <div
-      class="grid grid-cols-7 place-items-center w-full h-full rounded gap-1 pt-8 pb-4 col-span-7"
+      class="grid grid-cols-7 z-10 place-items-center w-full h-full rounded gap-1 pt-8 pb-4 col-span-7"
       :class="[monthFromParams === 5 ? 'grid-rows-7' : 'grid-rows-6']"
     >
       <div
@@ -62,7 +62,7 @@
         </NuxtLink>
       </div>
     </div>
-    <div class="place-self-center">
+    <div class="place-self-center z-10">
       <div
         v-if="currentMonth > monthFromParams + 1"
         class="max-w-max p-1 rounded-full place-self-center cursor-pointer"
