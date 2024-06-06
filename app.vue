@@ -41,7 +41,7 @@ const isShown = ref(words.map(() => false))
 </script>
 
 <template>
-  <div class="grid justify-center place-content-center min-h-svh">
+  <div class="grid justify-center place-content-center min-h-dvh">
     <nav class="px-8 py-4 absolute w-full">
       <ul class="flex flex-row-reverse">
         <li class="mt-2">
@@ -85,7 +85,10 @@ const isShown = ref(words.map(() => false))
       </NuxtLink>
       <sup class="text-xl font-black font-serif text-primary">♫</sup>
     </div>
-    <NuxtPage :transition="{ name: slideDirection, mode: 'out-in' }" />
+    <NuxtPage
+      :transition="{ name: slideDirection, mode: 'out-in' }"
+      class="dark:sm:bg-[#121212] dark:z-50 dark:sm:rounded-lg dark:sm:shadow-2xl"
+    />
     <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
       <NuxtLink
         v-if="updateDate(useRoute().params.id as string, -1) >= $config.public.init"
@@ -114,11 +117,11 @@ const isShown = ref(words.map(() => false))
       </NuxtLink>
     </div>
     <div
-      class="absolute inset-0 -z-10 bg-[15%_bottom] opacity-50 bg-no-repeat mix-blend-screen sm:bg-[38%_bottom] md:bg-[40%_bottom] lg:bg-[44%_bottom] xl:bg-[80%_left] forced-colors:hidden"
+      class="dark:visible invisible absolute inset-0 -z-10 bg-[15%_bottom] opacity-50 bg-no-repeat mix-blend-screen sm:bg-[38%_bottom] md:bg-[40%_bottom] lg:bg-[44%_bottom] xl:bg-[80%_left] forced-colors:hidden"
       style="background-image: url('/blur.webp')"
     ></div>
     <div
-      class="absolute inset-0 bg-top opacity-[0.08] pointer-events-none"
+      class="dark:visible invisible absolute inset-0 bg-top opacity-[0.08] pointer-events-none"
       style="background-image: url('/noise.png')"
     />
   </div>

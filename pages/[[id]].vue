@@ -177,7 +177,7 @@ watch(bass, (newValue) => {
 <template>
   <div class="grid justify-center place-content-center">
     <div
-      class="grid justify-center sm:border sm:p-10 sm:rounded-lg sm:shadow-md"
+      class="grid justify-center sm:border border-white/15 sm:p-10 sm:rounded-lg sm:shadow-md"
     >
       <div class="mx-4 text-center font-black font-serif pb-4">
         <span v-if="!alreadyAnswered() && currentRound < 4"
@@ -247,7 +247,7 @@ watch(bass, (newValue) => {
         v-model="searchQuery"
         @input="handleInput"
         placeholder="type your guess here..."
-        class="mx-4 mt-8 mb-2 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted"
+        class="mx-4 mt-8 mb-2 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted bg-transparent"
       />
 
       <div
