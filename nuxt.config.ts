@@ -12,6 +12,7 @@ export default defineNuxtConfig({
   },
   hub: {
     blob: true,
+    remote: true,
   },
   tailwindcss: {
     config: {

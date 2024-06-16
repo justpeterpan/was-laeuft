@@ -1,9 +1,24 @@
 <script lang="ts" setup>
+export type Song = {
+  views: string
+  year: number
+  link: string
+  title: string
+  artist: string
+  cover: string
+  short: string
+}
+
+export type SongsData = {
+  [date: string]: Song
+}
+
 const route = useRoute()
 
 definePageMeta({
   middleware: 'redirect',
 })
+const { data: songs } = await useFetch<SongsData>('/api/s')
 
 function initialDate(date: string | undefined) {
   if (!date) return new Date()
@@ -41,6 +56,7 @@ const isShown = ref(words.map(() => false))
 </script>
 
 <template>
+  <NuxtLoadingIndicator color="#E6BC13" />
   <div class="grid justify-center place-content-center min-h-dvh">
     <nav class="px-8 py-4 absolute w-full">
       <ul class="flex flex-row-reverse">
@@ -86,12 +102,13 @@ const isShown = ref(words.map(() => false))
       <sup class="text-xl font-black font-serif text-primary">♫</sup>
     </div>
     <NuxtPage
+      :songs="songs"
       :transition="{ name: slideDirection, mode: 'out-in' }"
       class="dark:sm:bg-[#121212] dark:z-50 dark:sm:rounded-lg dark:sm:shadow-2xl"
     />
     <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
       <NuxtLink
-        v-if="updateDate(useRoute().params.id as string, -1) >= $config.public.init"
+        v-if="updateDate(route.params.id as string, -1) >= $config.public.init"
         :to="`/${updateDate(route.params.id as string, -1)}`"
         class="cursor-pointer max-w-min"
         @click="handleSlide('right')"

@@ -1,25 +1,22 @@
 <script lang="ts" setup>
 import { useDebounceFn, useStorage } from '@vueuse/core'
+import type { SongsData } from '~/app.vue'
 import confetti from 'canvas-confetti'
 
 definePageMeta({
   middleware: 'redirect',
 })
 
+const props = defineProps<{ songs: SongsData }>()
+
 const { params } = useRoute()
 const toast = useToast()
 
-const state = useStorage('answers', new Set())
-
-const { year, artist, cover, views, link, short, title } = await $fetch(
-  '/api/s',
-  {
-    lazy: true,
-    server: false,
-    method: 'POST',
-    body: JSON.stringify({ d: params.id ? params.id : today }),
-  }
+const song = computed(
+  () => props.songs[params.id ? (params.id as string) : today]
 )
+
+const state = useStorage('answers', new Set())
 
 function randomInRange(min: number, max: number) {
   return Math.random() * (max - min) + min
@@ -82,8 +79,8 @@ function selectAnswer(index: number) {
   searchQuery.value = answer.value
 
   const normalizedAnswer = answer.value.toLowerCase().trim()
-  const normalizedTitle = title.toLowerCase().trim()
-  const normalizedArtist = artist.toLowerCase().trim()
+  const normalizedTitle = song.value.title.toLowerCase().trim()
+  const normalizedArtist = song.value.artist.toLowerCase().trim()
 
   if (
     normalizedAnswer.includes(normalizedTitle) &&
@@ -220,10 +217,10 @@ watch(bass, (newValue) => {
         </button>
       </div>
       <div class="hidden">
-        <audio :src="audioSrc(short, 'bass')" ref="bass" />
-        <audio :src="audioSrc(short, 'drums')" ref="drums" />
-        <audio :src="audioSrc(short, 'vocals')" ref="vocals" />
-        <audio :src="audioSrc(short, 'instru')" ref="instru" />
+        <audio :src="audioSrc(song.short, 'bass')" ref="bass" />
+        <audio :src="audioSrc(song.short, 'drums')" ref="drums" />
+        <audio :src="audioSrc(song.short, 'vocals')" ref="vocals" />
+        <audio :src="audioSrc(song.short, 'instru')" ref="instru" />
       </div>
 
       <div
@@ -232,12 +229,12 @@ watch(bass, (newValue) => {
       >
         <div>
           YouTube views:
-          {{ !alreadyAnswered() && currentRound < 1 ? '???' : views }}
+          {{ !alreadyAnswered() && currentRound < 1 ? '???' : song.views }}
         </div>
         <div>|</div>
         <div>
           Year of release:
-          {{ !alreadyAnswered() && currentRound < 2 ? '???' : year }}
+          {{ !alreadyAnswered() && currentRound < 2 ? '???' : song.year }}
         </div>
       </div>
 
@@ -280,7 +277,7 @@ watch(bass, (newValue) => {
         <div>
           <div class="relative grid items-center place-items-center">
             <img
-              :src="cover"
+              :src="song.cover"
               alt="album cover of the song"
               class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-lg"
             />
@@ -305,11 +302,11 @@ watch(bass, (newValue) => {
             </div>
           </div>
           <NuxtLink
-            :to="link"
+            :to="song.link"
             target="_blank"
             class="flex flex-row items-center gap-2"
           >
-            ♫ {{ artist }} - {{ title }} ({{ year }})
+            ♫ {{ song.artist }} - {{ song.title }} ({{ song.year }})
           </NuxtLink>
         </div>
       </div>
