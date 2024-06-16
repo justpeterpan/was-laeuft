@@ -1,3 +1,18 @@
+import confetti from 'canvas-confetti'
+
+function randomInRange(min: number, max: number) {
+  return Math.random() * (max - min) + min
+}
+
+export function wow() {
+  confetti({
+    origin: { y: 0.5, x: 0.5 },
+    angle: randomInRange(55, 125),
+    spread: randomInRange(50, 70),
+    particleCount: randomInRange(50, 100),
+  })
+}
+
 export function mapMonthNumberToName(monthNumber: number) {
   switch (monthNumber) {
     case 1:

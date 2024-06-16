@@ -1,35 +1,16 @@
 <script lang="ts" setup>
 import { useDebounceFn, useStorage } from '@vueuse/core'
 import type { SongsData } from '~/app.vue'
-import confetti from 'canvas-confetti'
 
-definePageMeta({
-  middleware: 'redirect',
-})
-
-const props = defineProps<{ songs: SongsData }>()
+definePageMeta({ middleware: 'redirect' })
 
 const { params } = useRoute()
 const toast = useToast()
-
-const song = computed(
-  () => props.songs[params.id ? (params.id as string) : today]
-)
-
 const state = useStorage('answers', new Set())
 
-function randomInRange(min: number, max: number) {
-  return Math.random() * (max - min) + min
-}
+const props = defineProps<{ songs: SongsData }>()
 
-function wow() {
-  confetti({
-    origin: { y: 0.5, x: 0.5 },
-    angle: randomInRange(55, 125),
-    spread: randomInRange(50, 70),
-    particleCount: randomInRange(50, 100),
-  })
-}
+const s = computed(() => props.songs[params.id ? (params.id as string) : today])
 
 const currentDate = params.id
   ? (params.id as string).substring(6, 8)
@@ -72,15 +53,17 @@ const handleInput = useDebounceFn(async () => {
   await search()
 }, 300)
 
+const normalize = (t: string) => t.toLowerCase().trim()
+
 function selectAnswer(index: number) {
-  const selectedHit = searchHits.value[index]
+  const { artist, name } = searchHits.value[index]
   searchHits.value = []
-  answer.value = `${selectedHit.artist} - ${selectedHit.name}`
+  answer.value = `${artist} - ${name}`
   searchQuery.value = answer.value
 
-  const normalizedAnswer = answer.value.toLowerCase().trim()
-  const normalizedTitle = song.value.title.toLowerCase().trim()
-  const normalizedArtist = song.value.artist.toLowerCase().trim()
+  const normalizedAnswer = normalize(answer.value)
+  const normalizedTitle = normalize(s.value.title)
+  const normalizedArtist = normalize(s.value.artist)
 
   if (
     normalizedAnswer.includes(normalizedTitle) &&
@@ -217,10 +200,10 @@ watch(bass, (newValue) => {
         </button>
       </div>
       <div class="hidden">
-        <audio :src="audioSrc(song.short, 'bass')" ref="bass" />
-        <audio :src="audioSrc(song.short, 'drums')" ref="drums" />
-        <audio :src="audioSrc(song.short, 'vocals')" ref="vocals" />
-        <audio :src="audioSrc(song.short, 'instru')" ref="instru" />
+        <audio :src="audioSrc(s.short, 'bass')" ref="bass" />
+        <audio :src="audioSrc(s.short, 'drums')" ref="drums" />
+        <audio :src="audioSrc(s.short, 'vocals')" ref="vocals" />
+        <audio :src="audioSrc(s.short, 'instru')" ref="instru" />
       </div>
 
       <div
@@ -229,12 +212,12 @@ watch(bass, (newValue) => {
       >
         <div>
           YouTube views:
-          {{ !alreadyAnswered() && currentRound < 1 ? '???' : song.views }}
+          {{ !alreadyAnswered() && currentRound < 1 ? '???' : s.views }}
         </div>
         <div>|</div>
         <div>
           Year of release:
-          {{ !alreadyAnswered() && currentRound < 2 ? '???' : song.year }}
+          {{ !alreadyAnswered() && currentRound < 2 ? '???' : s.year }}
         </div>
       </div>
 
@@ -277,7 +260,7 @@ watch(bass, (newValue) => {
         <div>
           <div class="relative grid items-center place-items-center">
             <img
-              :src="song.cover"
+              :src="s.cover"
               alt="album cover of the song"
               class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-lg"
             />
@@ -302,11 +285,11 @@ watch(bass, (newValue) => {
             </div>
           </div>
           <NuxtLink
-            :to="song.link"
+            :to="s.link"
             target="_blank"
             class="flex flex-row items-center gap-2"
           >
-            ♫ {{ song.artist }} - {{ song.title }} ({{ song.year }})
+            ♫ {{ s.artist }} - {{ s.title }} ({{ s.year }})
           </NuxtLink>
         </div>
       </div>
