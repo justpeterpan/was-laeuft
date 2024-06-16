@@ -16,10 +16,13 @@
   },
   "devDependencies": {
     "@nuxt/ui": "^2.17.0",
+    "@nuxthub/core": "^0.6.15",
     "@types/canvas-confetti": "^1.6.4",
     "@vueuse/core": "^10.11.0",
     "@vueuse/nuxt": "^10.11.0",
     "canvas-confetti": "^1.9.3",
-    "nuxt": "^3.12.2"
-  }
+    "nuxt": "^3.12.2",
+    "wrangler": "^3.60.3"
+  },
+  "packageManager": "pnpm@9.1.2+sha512.127dc83b9ea10c32be65d22a8efb4a65fb952e8fefbdfded39bdc3c97efc32d31b48b00420df2c1187ace28c921c902f0cb5a134a4d032b8b5295cbfa2c681e2"
 }
