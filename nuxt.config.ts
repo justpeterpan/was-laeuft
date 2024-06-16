@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
-  modules: ['@vueuse/nuxt', '@nuxt/ui'],
+  modules: ['@vueuse/nuxt', '@nuxt/ui', '@nuxthub/core'],
   runtimeConfig: {
     lastfm: process.env.LASTFM || '',
     public: {
@@ -10,10 +10,8 @@ export default defineNuxtConfig({
       init: process.env.INIT || '20240524',
     },
   },
-  ui: {
-    notifications: {
-      position: 'bottom-0 top-auto left-0 right-auto',
-    },
+  hub: {
+    blob: true,
   },
   tailwindcss: {
     config: {
