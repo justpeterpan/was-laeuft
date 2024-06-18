@@ -19,7 +19,7 @@ const currentMonth = params.id
   ? (params.id as string).substring(4, 6)
   : today.substring(4, 6)
 
-const searchQuery = defineModel('searchQuery', { type: String, default: '' })
+const searchQuery = ref('')
 const currentRound = ref(alreadyAnswered() ? 4 : 0)
 const bass = ref() as Ref<HTMLAudioElement>
 const drums = ref() as Ref<HTMLAudioElement>
@@ -129,9 +129,6 @@ function skipCurrentRound(skip = 1) {
   if (currentRound.value >= 3) playLabel.value = 'track'
   if (currentRound.value > 3) playCurrentStem()
 }
-function audioSrc(short: string, stem: string) {
-  return `${useRuntimeConfig().public.bucket}/${short}/${stem}.mp3`
-}
 
 onMounted(() => {
   currentTime.value = bass.value.currentTime
@@ -159,46 +156,6 @@ watch(bass, (newValue) => {
     <div
       class="grid justify-center sm:border border-white/15 sm:p-10 sm:rounded-lg sm:shadow-md"
     >
-      <div class="mx-4 text-center font-black font-serif pb-4">
-        <span v-if="!alreadyAnswered() && currentRound < 4"
-          >{{ numberAsString[currentRound + 1] }} of 4 rounds on
-        </span>
-        {{ mapMonthNumberToName(+currentMonth) }},
-        {{ numberAsString[+currentDate] }}
-      </div>
-      <div
-        v-if="currentRound < 4"
-        class="grid gap-1 sm:gap-4 m-4 w-[300px] sm:w-[350px]"
-        :class="[
-          alreadyAnswered() || currentRound >= 4
-            ? 'grid-cols-1'
-            : 'grid-cols-2',
-        ]"
-      >
-        <button
-          @click="playCurrentStem()"
-          :style="{
-            background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
-          }"
-          class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
-        >
-          <UIcon
-            :name="
-              isPlaying ? 'i-heroicons-pause-circle' : 'i-heroicons-play-circle'
-            "
-            class="text-lg align-middle"
-          />
-          <span class="align-middle">{{ playLabel }}</span>
-        </button>
-        <button
-          v-if="!alreadyAnswered() && currentRound < 4"
-          @click="skipCurrentRound()"
-          class="rounded flex flex-row items-center justify-center flex-grow gap-1 shadow-sm border px-4 py-2"
-        >
-          <UIcon name="i-heroicons-arrow-right-circle" class="text-lg" />skip
-          guess
-        </button>
-      </div>
       <div class="hidden">
         <audio :src="`/stems/${s.short}/bass.mp3`" ref="bass" />
         <audio :src="`/stems/${s.short}/drums.mp3`" ref="drums" />
@@ -206,93 +163,55 @@ watch(bass, (newValue) => {
         <audio :src="`/stems/${s.short}/instru.mp3`" ref="instru" />
       </div>
 
-      <div
-        v-if="currentRound < 4"
-        class="mx-4 text-sm sm:text-base font-thin py-2 flex flex-row gap-1"
-      >
-        <div>
-          YouTube views:
-          {{ !alreadyAnswered() && currentRound < 1 ? '???' : s.views }}
-        </div>
-        <div>|</div>
-        <div>
-          Year of release:
-          {{ !alreadyAnswered() && currentRound < 2 ? '???' : s.year }}
-        </div>
-      </div>
-
-      <input
-        v-if="!alreadyAnswered() && currentRound < 4"
-        type="text"
-        v-model="searchQuery"
-        @input="handleInput"
-        placeholder="type your guess here..."
-        class="mx-4 mt-8 mb-2 max-w-[300px] sm:max-w-[350px] p-2 border-b border-neutral-300 border-dotted bg-transparent"
+      <RoundAndDate
+        :current-round="currentRound"
+        :already-answered="alreadyAnswered()"
+        :current-date="currentDate"
+        :current-month="currentMonth"
+      />
+      <ControlButtons
+        :current-round="currentRound"
+        :already-answered="alreadyAnswered()"
+        :progress="progress"
+        :is-playing="isPlaying"
+        :play-label="playLabel"
+        @skip-current-round="skipCurrentRound"
+        @play-current-stem="playCurrentStem"
       />
 
-      <div
-        v-if="currentRound < 4"
-        class="max-w-[300px] sm:max-w-[350px] min-h-4 max-h-[190px]"
-      >
-        <ul class="m-4 max-h-[450px]">
-          <li
-            v-for="(hit, index) of searchHits"
-            :key="hit.name + hit.artist"
-            @click="selectAnswer(index)"
-            class="cursor-pointer border-b border-dotted border-neutral-300 truncate w-[300px] sm:w-[350px] my-2 px-2"
-          >
-            {{ hit.artist }} - {{ hit.name }}
-          </li>
-        </ul>
-      </div>
+      <SongDetails
+        :current-round="currentRound"
+        :already-answered="alreadyAnswered()"
+        :views="s.views"
+        :year="s.year"
+      />
 
-      <div
-        v-if="alreadyAnswered() || correctlyAnswered || currentRound > 3"
-        class="max-w-[300px] sm:max-w-[350px] m-4"
-      >
-        <p v-if="!alreadyAnswered()" class="italic font-serif font-medium pb-2">
-          {{
-            correctlyAnswered
-              ? 'Well done!'
-              : 'No worries! Better luck next time!'
-          }}
-        </p>
-        <div>
-          <div class="relative grid items-center place-items-center">
-            <img
-              :src="s.cover"
-              alt="album cover of the song"
-              class="mb-2 w-[300px] sm:w-[350px] shadow-md border border-neutral-300 rounded-lg"
-            />
-            <div
-              class="absolute bottom-2 rounded-bl-lg rounded-br-lg h-4 w-full"
-              :style="{
-                background: `linear-gradient(to right, #FACC15 ${progress}%, transparent ${progress}%)`,
-              }"
-            />
-            <div
-              class="absolute cursor-pointer pt-2 pb-0.5 px-2 bg-black/80 rounded-full opacity-90"
-              @click="playCurrentStem()"
-            >
-              <UIcon
-                :name="
-                  isPlaying
-                    ? 'i-heroicons-pause-circle'
-                    : 'i-heroicons-play-circle-16-solid'
-                "
-                class="w-8 h-8 shadow-md bg-white rounded-full"
-              />
-            </div>
-          </div>
-          <NuxtLink
-            :to="s.link"
-            target="_blank"
-            class="flex flex-row items-center gap-2"
-          >
-            ♫ {{ s.artist }} - {{ s.title }} ({{ s.year }})
-          </NuxtLink>
-        </div>
-      </div>
+      <SongSearch
+        :current-round="currentRound"
+        :already-answered="alreadyAnswered()"
+        @handle-input="handleInput"
+        v-model="searchQuery"
+      />
+
+      <SongResults
+        :current-round="currentRound"
+        :search-hits="searchHits"
+        @select-answer="selectAnswer($event)"
+      />
+
+      <WinView
+        :current-round="currentRound"
+        :already-answered="alreadyAnswered()"
+        :correctly-answered="correctlyAnswered"
+        :progress="progress"
+        :is-playing="isPlaying"
+        :cover="s.cover"
+        :link="s.link"
+        :title="s.title"
+        :artist="s.artist"
+        :year="s.year"
+        @play-current-stem="playCurrentStem"
+      />
     </div>
     <UNotifications color="primary" />
   </div>

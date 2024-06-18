@@ -13,29 +13,11 @@ export type SongsData = {
   [date: string]: Song
 }
 
+definePageMeta({ middleware: 'redirect' })
+
 const route = useRoute()
 
-definePageMeta({
-  middleware: 'redirect',
-})
 const { data: songs } = await useFetch<SongsData>('/api/s')
-
-function initialDate(date: string | undefined) {
-  if (!date) return new Date()
-  const year = parseInt(date.substring(0, 4), 10)
-  const month = parseInt(date.substring(4, 6), 10) - 1
-  const day = parseInt(date.substring(6, 8), 10)
-
-  return new Date(year, month, day)
-}
-
-function updateDate(date: string | undefined, days: number) {
-  const newDate = new Date(initialDate(date))
-  newDate.setDate(newDate.getDate() + days)
-  return `${newDate.getFullYear()}${(newDate.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}${newDate.getDate().toString().padStart(2, '0')}`
-}
 
 const slideDirection = useSlideDirection()
 
@@ -58,89 +40,15 @@ const isShown = ref(words.map(() => false))
 <template>
   <NuxtLoadingIndicator color="#E6BC13" />
   <div class="grid justify-center place-content-center min-h-dvh">
-    <nav class="px-8 py-4 absolute w-full">
-      <ul class="flex flex-row-reverse">
-        <li class="mt-2">
-          <UPopover
-            :popper="{ placement: 'bottom', offsetDistance: -20 }"
-            :ui="{
-              width: 'max-w-max',
-              base: 'h-32 px-2 py-1 text-sm font-thin italic font-serif p-4 relative',
-            }"
-            mode="hover"
-          >
-            <template #panel>
-              <div class="">
-                <p>1. Play the bass track and try to guess the song</p>
-                <p>2. Type your guess and select your answer</p>
-                <p>3. No clue? Skip the guess & play the next track</p>
-                <p>4. Four rounds: bass, drums, vocals, instruments</p>
-                <p>5. A new song challenge every day!</p>
-              </div>
-            </template>
-            <UIcon
-              name="i-heroicons-question-mark-circle"
-              class="h-6 w-6 p-2"
-            />
-          </UPopover>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="flex flex-row place-content-center items-center gap-1 pb-10">
-      <NuxtLink to="/">
-        <h1 class="text-2xl font-black drop-shadow-md font-serif">
-          <span
-            v-for="(word, index) in words"
-            :key="index"
-            :class="{ show: isShown[index] }"
-          >
-            {{ word }}
-          </span>
-        </h1>
-      </NuxtLink>
-      <sup class="text-xl font-black font-serif text-primary">♫</sup>
-    </div>
+    <NavBar />
+    <AnimatedLogo :words="words" :isShown="isShown" />
     <NuxtPage
       :songs="songs"
       :transition="{ name: slideDirection, mode: 'out-in' }"
       class="dark:sm:bg-[#121212] dark:z-50 dark:sm:rounded-lg dark:sm:shadow-2xl"
     />
-    <div class="mx-4 sm:mx-0 grid grid-flow-col grid-cols-3 pt-10 items-center">
-      <NuxtLink
-        v-if="updateDate(route.params.id as string, -1) >= $config.public.init"
-        :to="`/${updateDate(route.params.id as string, -1)}`"
-        class="cursor-pointer max-w-min"
-        @click="handleSlide('right')"
-        ><UIcon name="i-heroicons-arrow-left-circle-solid" class="w-6 h-6"
-      /></NuxtLink>
-      <div class="place-self-center col-start-2">
-        <UPopover :popper="{ placement: 'top', offsetDistance: 4 }">
-          <UIcon name="i-heroicons-calendar-days-20-solid" class="w-6 h-6" />
-          <template #panel="{ close }">
-            <div class="w-[330px] h-72">
-              <CalView @close-popup="close" />
-            </div>
-          </template>
-        </UPopover>
-      </div>
-      <NuxtLink
-        v-if="updateDate(route.params.id as string, 1) <= today"
-        :to="updateDate(route.params.id as string, 1) < today ? `/${updateDate(route.params.id as string, 1)}` : '/'"
-        class="cursor-pointer place-self-end col-start-3"
-        @click="handleSlide('left')"
-      >
-        <UIcon name="i-heroicons-arrow-right-circle-solid" class="w-6 h-6" />
-      </NuxtLink>
-    </div>
-    <div
-      class="dark:visible invisible absolute inset-0 -z-10 bg-[15%_bottom] opacity-50 bg-no-repeat mix-blend-screen sm:bg-[38%_bottom] md:bg-[40%_bottom] lg:bg-[44%_bottom] xl:bg-[80%_left] forced-colors:hidden"
-      style="background-image: url('/blur.webp')"
-    ></div>
-    <div
-      class="dark:visible invisible absolute inset-0 bg-top opacity-[0.08] pointer-events-none"
-      style="background-image: url('/noise.png')"
-    />
+    <BottomNav :id="(route.params.id as string)" @handle-slide="handleSlide" />
+    <NoiseBackground />
   </div>
 </template>
 
