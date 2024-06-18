@@ -1,5 +1,14 @@
 <script setup lang="ts">
-defineProps<{ words: Array<string>; isShown: Array<boolean> }>()
+const words = ['guess', 'the', 'song']
+const isShown = ref(words.map(() => false))
+
+onMounted(() => {
+  words.forEach((_, index) => {
+    setTimeout(() => {
+      isShown.value[index] = true
+    }, index * 300)
+  })
+})
 </script>
 
 <template>
@@ -18,3 +27,22 @@ defineProps<{ words: Array<string>; isShown: Array<boolean> }>()
     <sup class="text-xl font-black font-serif text-primary">♫</sup>
   </div>
 </template>
+
+<style scoped>
+h1 {
+  display: flex;
+  gap: 0.5rem;
+}
+
+h1 span {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+h1 span.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+</style>

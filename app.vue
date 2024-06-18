@@ -1,47 +1,21 @@
 <script lang="ts" setup>
-export type Song = {
-  views: string
-  year: number
-  link: string
-  title: string
-  artist: string
-  cover: string
-  short: string
-}
-
-export type SongsData = {
-  [date: string]: Song
-}
+import type { SongsData } from '~/types'
 
 definePageMeta({ middleware: 'redirect' })
-
 const route = useRoute()
-
 const { data: songs } = await useFetch<SongsData>('/api/s')
-
 const slideDirection = useSlideDirection()
 
 function handleSlide(direction: 'left' | 'right') {
   slideDirection.value = `slide-${direction}`
 }
-
-onMounted(() => {
-  words.forEach((_, index) => {
-    setTimeout(() => {
-      isShown.value[index] = true
-    }, index * 300)
-  })
-})
-
-const words = ['guess', 'the', 'song']
-const isShown = ref(words.map(() => false))
 </script>
 
 <template>
   <NuxtLoadingIndicator color="#E6BC13" />
   <div class="grid justify-center place-content-center min-h-dvh">
     <NavBar />
-    <AnimatedLogo :words="words" :isShown="isShown" />
+    <AnimatedLogo />
     <NuxtPage
       :songs="songs"
       :transition="{ name: slideDirection, mode: 'out-in' }"
@@ -53,23 +27,6 @@ const isShown = ref(words.map(() => false))
 </template>
 
 <style>
-h1 {
-  display: flex;
-  gap: 0.5rem;
-}
-
-h1 span {
-  display: inline-block;
-  transform: translateY(100%);
-  opacity: 0;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-h1 span.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
 .slide-left-enter-active,
 .slide-left-leave-active,
 .slide-right-enter-active,

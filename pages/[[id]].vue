@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useDebounceFn, useStorage } from '@vueuse/core'
-import type { SongsData } from '~/app.vue'
+import type { SongsData } from '~/types'
 
 definePageMeta({ middleware: 'redirect' })
 
