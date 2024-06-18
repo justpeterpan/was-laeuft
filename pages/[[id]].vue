@@ -200,10 +200,10 @@ watch(bass, (newValue) => {
         </button>
       </div>
       <div class="hidden">
-        <audio :src="audioSrc(s.short, 'bass')" ref="bass" />
-        <audio :src="audioSrc(s.short, 'drums')" ref="drums" />
-        <audio :src="audioSrc(s.short, 'vocals')" ref="vocals" />
-        <audio :src="audioSrc(s.short, 'instru')" ref="instru" />
+        <audio :src="`/stems/${s.short}/bass.mp3`" ref="bass" />
+        <audio :src="`/stems/${s.short}/drums.mp3`" ref="drums" />
+        <audio :src="`/stems/${s.short}/vocals.mp3`" ref="vocals" />
+        <audio :src="`/stems/${s.short}/instru.mp3`" ref="instru" />
       </div>
 
       <div
