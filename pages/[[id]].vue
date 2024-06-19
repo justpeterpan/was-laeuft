@@ -102,9 +102,9 @@ function playCurrentStem() {
   isPlaying.value = true
   const stems = [bass.value, drums.value, vocals.value, instru.value]
 
-  for (let i = 0; i <= currentRound.value; i++) {
-    if (stems[i]) stems[i].currentTime = 0
-  }
+  // for (let i = 0; i <= currentRound.value; i++) {
+  //   if (stems[i]) stems[i].currentTime = 0
+  // }
 
   for (let i = 0; i <= currentRound.value; i++) {
     stems[i]?.play()
