@@ -101,6 +101,11 @@ function playCurrentStem() {
 
   isPlaying.value = true
   const stems = [bass.value, drums.value, vocals.value, instru.value]
+
+  for (let i = 0; i <= currentRound.value; i++) {
+    if (stems[i]) stems[i].currentTime = 0
+  }
+
   for (let i = 0; i <= currentRound.value; i++) {
     stems[i]?.play()
   }
@@ -131,6 +136,10 @@ function skipCurrentRound(skip = 1) {
 }
 
 onMounted(() => {
+  bass.value.load()
+  drums.value.load()
+  vocals.value.load()
+  instru.value.load()
   currentTime.value = bass.value.currentTime
 })
 
@@ -149,6 +158,7 @@ watch(bass, (newValue) => {
     }, 500)
   }
 })
+const filepath = computed(() => `/stems/${s.value.short}/`)
 </script>
 
 <template>
@@ -157,10 +167,10 @@ watch(bass, (newValue) => {
       class="grid justify-center sm:border border-white/15 sm:p-10 sm:rounded-lg sm:shadow-md"
     >
       <div class="hidden">
-        <audio :src="`/stems/${s.short}/bass.mp3`" ref="bass" />
-        <audio :src="`/stems/${s.short}/drums.mp3`" ref="drums" />
-        <audio :src="`/stems/${s.short}/vocals.mp3`" ref="vocals" />
-        <audio :src="`/stems/${s.short}/instru.mp3`" ref="instru" />
+        <audio :src="`${filepath}/bass.mp3`" ref="bass" preload="auto" />
+        <audio :src="`${filepath}/drums.mp3`" ref="drums" preload="auto" />
+        <audio :src="`${filepath}/vocals.mp3`" ref="vocals" preload="auto" />
+        <audio :src="`${filepath}/instru.mp3`" ref="instru" preload="auto" />
       </div>
 
       <RoundAndDate
