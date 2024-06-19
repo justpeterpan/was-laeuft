@@ -158,7 +158,7 @@ watch(bass, (newValue) => {
     }, 500)
   }
 })
-const filepath = computed(() => `/stems/${s.value.short}/`)
+const filepath = computed(() => `/stems/${s.value.short}`)
 </script>
 
 <template>
