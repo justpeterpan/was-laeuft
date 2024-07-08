@@ -6,8 +6,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     lastfm: process.env.LASTFM || '',
     public: {
-      bucket: process.env.PUBLIC_BUCKET || '',
-      init: process.env.INIT || '20240524',
+      init: process.env.INIT || '20240701',
     },
   },
   hub: {
